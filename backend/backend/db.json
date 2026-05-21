@@ -1,0 +1,62 @@
+{
+  "config": {
+    "schoolName": "Yasrab School Management System",
+    "address": "Main Campus, Karachi",
+    "contact": "+92 123 4567890",
+    "email": "admin@yasrab.edu"
+  },
+  "students": [
+    {
+      "id": "S-285618",
+      "name": "Mozam",
+      "class": "Class 5",
+      "phone": "23433433",
+      "address": "",
+      "enrolledDate": "2026-05-21T09:38:05.618Z"
+    }
+  ],
+  "teachers": [],
+  "attendance": {},
+  "fees": {},
+  "results": {},
+  "timetable": {},
+  "logs": [
+    {
+      "id": 1779356283962,
+      "action": "Admission application: Mozam",
+      "type": "REGISTRY",
+      "time": "2026-05-21T09:38:03.962Z"
+    },
+    {
+      "id": 1779356054086,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "time": "2026-05-21T09:34:14.086Z"
+    },
+    {
+      "id": 1779356045989,
+      "action": "❌ Failed login attempt - invalid credentials for: adm",
+      "type": "SECURITY",
+      "time": "2026-05-21T09:34:05.989Z"
+    },
+    {
+      "id": 1779355564835,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "time": "2026-05-21T09:26:04.835Z"
+    }
+  ],
+  "announcements": [],
+  "admissions": [
+    {
+      "id": "ADM-1779356283961",
+      "name": "Mozam",
+      "father": "muhammad yousaf",
+      "class": "Class 5",
+      "phone": "23433433",
+      "address": "",
+      "status": "approved",
+      "date": "2026-05-21T09:38:03.961Z"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "students": [
+    {
+      "id": "S002",
+      "name": "Sara Khan",
+      "class": "9B",
+      "enrolledDate": "2026-05-21T06:33:12.137Z"
+    },
+    {
+      "id": "S003",
+      "name": "Fatima Ahmed",
+      "class": "10A",
+      "enrolledDate": "2026-05-21T06:33:12.137Z"
+    }
+  ],
+  "teachers": [
+    {
+      "name": "Mr. Ahmed Khan",
+      "subject": "Mathematics"
+    },
+    {
+      "name": "Ms. Ayesha",
+      "subject": "English"
+    }
+  ],
+  "attendance": {},
+  "fees": {
+    "S001": [
+      {
+        "amount": 5000,
+        "month": "Migrated",
+        "method": "cash",
+        "date": "2026-05-21T06:33:12.136Z"
+      }
+    ],
+    "S002": [
+      {
+        "amount": 5000,
+        "month": "Migrated",
+        "method": "cash",
+        "date": "2026-05-21T06:33:12.137Z"
+      }
+    ]
+  },
+  "results": {
+    "S001": [
+      {
+        "subject": "Migrated",
+        "marks": 92,
+        "total": 100,
+        "date": "2026-05-21T06:33:12.137Z"
+      }
+    ],
+    "S002": [
+      {
+        "subject": "Migrated",
+        "marks": 87,
+        "total": 100,
+        "date": "2026-05-21T06:33:12.137Z"
+      }
+    ]
+  },
+  "timetable": {
+    "10A": [
+      {
+        "subject": "Mathematics",
+        "time": "Monday 10:00 AM"
+      },
+      {
+        "subject": "English",
+        "time": "Tuesday 2:00 PM"
+      }
+    ]
+  },
+  "logs": [
+    {
+      "id": 1779361433287,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "time": "2026-05-21T11:03:53.287Z"
+    },
+    {
+      "id": 1779354146700,
+      "action": "Principal authenticated: yasrab",
+      "type": "AUTH",
+      "time": "2026-05-21T09:02:26.700Z"
+    },
+    {
+      "id": 1779343155363,
+      "action": "Principal authenticated successfully.",
+      "type": "AUTH",
+      "time": "2026-05-21T05:59:15.363Z"
+    },
+    {
+      "id": 1779343146555,
+      "action": "Security Alert: Failed login attempt for ID: yasrab",
+      "type": "SECURITY",
+      "time": "2026-05-21T05:59:06.555Z"
+    },
+    {
+      "action": "System test completed",
+      "time": "2026-05-21T03:40:07.919Z"
+    }
+  ],
+  "config": {
+    "schoolName": "Yasrab School Management System",
+    "address": "Main Campus, Karachi",
+    "contact": "+92 123 4567890",
+    "email": "admin@yasrab.edu"
+  },
+  "announcements": [],
+  "admissions": []
+}
