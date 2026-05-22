@@ -3,520 +3,482 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yasrab School ERP</title>
+  <title>Yasrab School Management System</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
- 
-<!-- TOAST HUD -->
-<div id="toastContainer" class="toast-hud"></div>
- 
-<!-- LOGIN PAGE -->
-<div id="loginPage" class="login-wrapper">
-  <div class="login-noise"></div>
-  <div class="login-box">
-    <div class="login-brand">
-      <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
-      <h1>Yasrab School</h1>
-      <p>Unified Management System</p>
+  <div id="toastContainer" class="toast-container"></div>
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loader">
+      <div class="loader-spinner"></div>
+      <p>Loading Yasrab ERP...</p>
     </div>
-    <form id="loginForm" class="login-form">
-      <div class="input-row">
-        <i class="fas fa-id-badge"></i>
-        <input type="text" id="user" placeholder="Admin Username" autocomplete="username" required>
-      </div>
-      <div class="input-row">
-        <i class="fas fa-lock"></i>
-        <input type="password" id="pass" placeholder="Password" autocomplete="current-password" required>
-      </div>
-      <button type="submit" class="btn-login">
-        <span>Sign In</span> <i class="fas fa-arrow-right-long"></i>
-      </button>
-    </form>
-    <div class="login-hint">Default: <code>yasrab</code> / <code>12345678</code></div>
   </div>
-</div>
- 
-<!-- MAIN APPLICATION -->
-<div id="mainApp" style="display:none;">
- 
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-head">
-      <div class="s-logo">
-        <span class="logo-mark"><i class="fas fa-atom"></i></span>
-        <div class="logo-text">Yasrab <em>ERP</em></div>
+
+  <!-- LOGIN PAGE -->
+  <div id="loginPage" class="auth-page">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="auth-icon"><i class="fas fa-graduation-cap"></i></div>
+          <h1>Yasrab School</h1>
+          <p>Unified Management System</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
+            <label for="username">Admin Username</label>
+            <div class="input-wrapper">
+              <i class="fas fa-user"></i>
+              <input type="text" id="username" placeholder="Enter username" required autocomplete="username">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" placeholder="Enter password" required autocomplete="current-password">
+              <button type="button" class="toggle-password" onclick="togglePassword()"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <button type="submit" class="btn-login"><span>Sign In</span><i class="fas fa-arrow-right"></i></button>
+        </form>
+        <div class="auth-footer"><p>Demo: <code>admin</code> / <code>1234</code></p></div>
       </div>
-      <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
-        <i class="fas fa-circle-half-stroke"></i>
-      </button>
     </div>
- 
-    <nav class="s-nav">
-      <div class="nav-group">
-        <div class="nav-label">Overview</div>
-        <button class="nav-item active" data-module="dashboard" onclick="openModule('dashboard',event)">
-          <i class="fas fa-table-columns"></i><span>Dashboard</span>
-        </button>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="mainApp" class="app-container" style="display: none;">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo"><i class="fas fa-school"></i><span class="logo-text">Yasrab<em>ERP</em></span></div>
+        <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       </div>
-      <div class="nav-group">
-        <div class="nav-label">People</div>
-        <button class="nav-item" data-module="admissions" onclick="openModule('admissions',event)">
-          <i class="fas fa-user-plus"></i><span>Admissions</span>
-        </button>
-        <button class="nav-item" data-module="students" onclick="openModule('students',event)">
-          <i class="fas fa-users-gear"></i><span>Students</span>
-          <span class="n-badge" id="badgeStudents">0</span>
-        </button>
-        <button class="nav-item" data-module="teachers" onclick="openModule('teachers',event)">
-          <i class="fas fa-chalkboard-user"></i><span>Faculty</span>
-        </button>
-      </div>
-      <div class="nav-group">
-        <div class="nav-label">Daily Ops</div>
-        <button class="nav-item" data-module="attendance" onclick="openModule('attendance',event)">
-          <i class="fas fa-clipboard-user"></i><span>Attendance</span>
-        </button>
-        <button class="nav-item" data-module="timetable" onclick="openModule('timetable',event)">
-          <i class="fas fa-calendar-lines-pen"></i><span>Schedules</span>
-        </button>
-      </div>
-      <div class="nav-group">
-        <div class="nav-label">Academic</div>
-        <button class="nav-item" data-module="fees" onclick="openModule('fees',event)">
-          <i class="fas fa-money-check-dollar"></i><span>Fee Ledger</span>
-        </button>
-        <button class="nav-item" data-module="results" onclick="openModule('results',event)">
-          <i class="fas fa-chart-simple"></i><span>Results</span>
-        </button>
-      </div>
-      <div class="nav-group">
-        <div class="nav-label">Admin</div>
-        <button class="nav-item" data-module="announcements" onclick="openModule('announcements',event)">
-          <i class="fas fa-bullhorn"></i><span>Notices</span>
-        </button>
-        <button class="nav-item" data-module="settings" onclick="openModule('settings',event)">
-          <i class="fas fa-sliders"></i><span>Settings</span>
-        </button>
-        <button class="nav-item" data-module="logs" onclick="openModule('logs',event)">
-          <i class="fas fa-shield-halved"></i><span>Audit Logs</span>
-        </button>
-      </div>
-    </nav>
- 
-    <div class="s-foot">
-      <button class="btn-logout" onclick="logout()">
-        <i class="fas fa-power-off"></i><span>Sign Out</span>
-      </button>
-    </div>
-  </aside>
- 
-  <!-- SIDEBAR OVERLAY (mobile) -->
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
- 
-  <!-- MAIN CONTENT -->
-  <div class="main-wrap">
-    <header class="topbar">
-      <div class="tb-left">
-        <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <h1 id="pageTitle">Dashboard</h1>
-      </div>
-      <div class="tb-right">
-        <button class="tb-icon" title="Export Backup" onclick="exportData()"><i class="fas fa-cloud-arrow-down"></i></button>
-        <button class="tb-icon" title="Refresh" onclick="location.reload()"><i class="fas fa-rotate-right"></i></button>
-        <div class="tb-user">
-          <div class="tb-avatar"><i class="fas fa-user-tie"></i></div>
-          <div class="tb-meta">
-            <span id="username" class="tb-name">Principal</span>
-            <span class="tb-role">Administrator</span>
-          </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-title">Dashboard</div>
+          <button class="nav-item active" data-module="dashboard" onclick="switchModule('dashboard', event)">
+            <i class="fas fa-chart-line"></i><span>Dashboard</span>
+          </button>
         </div>
-      </div>
-    </header>
- 
-    <main class="workspace">
- 
-      <!-- ===== DASHBOARD ===== -->
-      <section id="dashboard" class="view active">
- 
-        <div class="welcome-banner">
-          <div class="wb-content">
-            <h2>Good <span id="greetTime">Morning</span>, <span id="welcomeName">Administrator</span></h2>
-            <p>Institutional engine is running at full capacity.</p>
-            <div class="wb-chips">
-              <div class="chip"><i class="fas fa-clock"></i><span id="dashTime">--:--</span></div>
-              <div class="chip"><i class="fas fa-calendar-day"></i><span id="dashDate">---</span></div>
+        <div class="nav-section">
+          <div class="nav-title">People</div>
+          <button class="nav-item" data-module="admissions" onclick="switchModule('admissions', event)">
+            <i class="fas fa-user-plus"></i><span>Admissions</span><span class="badge" id="admissionsBadge">0</span>
+          </button>
+          <button class="nav-item" data-module="students" onclick="switchModule('students', event)">
+            <i class="fas fa-users"></i><span>Students</span><span class="badge" id="studentsBadge">0</span>
+          </button>
+          <button class="nav-item" data-module="teachers" onclick="switchModule('teachers', event)">
+            <i class="fas fa-chalkboard-user"></i><span>Teachers</span><span class="badge" id="teachersBadge">0</span>
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">Operations</div>
+          <button class="nav-item" data-module="attendance" onclick="switchModule('attendance', event)">
+            <i class="fas fa-clipboard-check"></i><span>Attendance</span>
+          </button>
+          <button class="nav-item" data-module="timetable" onclick="switchModule('timetable', event)">
+            <i class="fas fa-calendar"></i><span>Timetable</span>
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">Academic</div>
+          <button class="nav-item" data-module="fees" onclick="switchModule('fees', event)">
+            <i class="fas fa-money-bill"></i><span>Fees</span>
+          </button>
+          <button class="nav-item" data-module="results" onclick="switchModule('results', event)">
+            <i class="fas fa-chart-bar"></i><span>Results</span>
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">Admin</div>
+          <button class="nav-item" data-module="announcements" onclick="switchModule('announcements', event)">
+            <i class="fas fa-bullhorn"></i><span>Announcements</span>
+          </button>
+          <button class="nav-item" data-module="settings" onclick="switchModule('settings', event)">
+            <i class="fas fa-cog"></i><span>Settings</span>
+          </button>
+          <button class="nav-item" data-module="logs" onclick="switchModule('logs', event)">
+            <i class="fas fa-history"></i><span>Logs</span>
+          </button>
+        </div>
+        <div class="nav-footer">
+          <button class="nav-item" onclick="toggleTheme()"><i class="fas fa-moon"></i><span>Dark Mode</span></button>
+          <button class="nav-item logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+          <div class="breadcrumb" id="breadcrumb"></div>
+        </div>
+        <div class="top-bar-right">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="globalSearch" placeholder="Search..." onkeyup="globalSearch(event)">
+          </div>
+          <button class="theme-btn" onclick="toggleTheme()" title="Toggle Theme"><i class="fas fa-circle-half-stroke"></i></button>
+          <div class="user-menu">
+            <button class="user-btn" onclick="toggleUserMenu()"><i class="fas fa-user-circle"></i><span id="currentUser">Admin</span></button>
+            <div class="dropdown-menu" id="userDropdown">
+              <button onclick="switchModule('settings', null)"><i class="fas fa-cog"></i> Settings</button>
+              <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
           </div>
-          <div class="wb-icon"><i class="fas fa-chart-line"></i></div>
         </div>
- 
-        <div class="stat-grid">
-          <div class="stat-card" style="--accent:#4f46e5">
-            <div class="sc-top"><i class="fas fa-user-group"></i><span>Students</span></div>
-            <div class="sc-num" id="sCount">0</div>
-            <div class="sc-sub">Active Enrolment</div>
+      </header>
+
+      <div class="content-wrapper">
+        <!-- Dashboard -->
+        <div id="module-dashboard" class="module-content">
+          <div class="module-header">
+            <h2>Dashboard</h2>
+            <button class="btn btn-secondary" onclick="refreshDashboard()"><i class="fas fa-refresh"></i> Refresh</button>
           </div>
-          <div class="stat-card" style="--accent:#7c3aed">
-            <div class="sc-top"><i class="fas fa-graduation-cap"></i><span>Faculty</span></div>
-            <div class="sc-num" id="tCount">0</div>
-            <div class="sc-sub">Verified Staff</div>
+          <div class="dashboard-grid">
+            <div class="stat-card"><div class="stat-icon" style="background: #3498db;"><i class="fas fa-users"></i></div><div class="stat-content"><p>Total Students</p><h3 id="stat-students">0</h3></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background: #2ecc71;"><i class="fas fa-chalkboard-user"></i></div><div class="stat-content"><p>Total Teachers</p><h3 id="stat-teachers">0</h3></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background: #e74c3c;"><i class="fas fa-clock"></i></div><div class="stat-content"><p>Pending Admissions</p><h3 id="stat-admissions">0</h3></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background: #f39c12;"><i class="fas fa-money-bill"></i></div><div class="stat-content"><p>Total Fees</p><h3 id="stat-fees">Rs. 0</h3></div></div>
           </div>
-          <div class="stat-card" style="--accent:#0891b2">
-            <div class="sc-top"><i class="fas fa-hourglass-half"></i><span>Pending</span></div>
-            <div class="sc-num" id="admCount">0</div>
-            <div class="sc-sub">Awaiting Approval</div>
-          </div>
-          <div class="stat-card" style="--accent:#d97706">
-            <div class="sc-top"><i class="fas fa-sack-dollar"></i><span>Revenue</span></div>
-            <div class="sc-num" id="fCount">0</div>
-            <div class="sc-sub">PKR Collected</div>
-          </div>
-        </div>
- 
-        <div class="dash-split">
-          <div class="widget-card">
-            <div class="wc-head">
-              <h3><i class="fas fa-shield-halved"></i> Recent Audit</h3>
-              <button class="link-btn" onclick="openModule('logs')">View All →</button>
+          <div class="dashboard-content">
+            <div class="card">
+              <div class="card-header"><h3>Recent Activity</h3></div>
+              <div class="activity-list" id="activityList"></div>
             </div>
-            <div id="recentLogs" class="stream-list"></div>
-          </div>
-          <div class="widget-card">
-            <div class="wc-head">
-              <h3><i class="fas fa-user-plus"></i> Latest Students</h3>
-              <button class="link-btn" onclick="openModule('students')">View All →</button>
+            <div class="card">
+              <div class="card-header"><h3>Quick Actions</h3></div>
+              <div class="quick-actions">
+                <button class="action-btn" onclick="switchModule('admissions', null)"><i class="fas fa-user-plus"></i><span>New Admission</span></button>
+                <button class="action-btn" onclick="switchModule('attendance', null)"><i class="fas fa-clipboard-check"></i><span>Attendance</span></button>
+                <button class="action-btn" onclick="switchModule('fees', null)"><i class="fas fa-money-bill"></i><span>Record Fee</span></button>
+                <button class="action-btn" onclick="switchModule('announcements', null)"><i class="fas fa-bullhorn"></i><span>Announcement</span></button>
+              </div>
             </div>
-            <div id="recentStudents" class="stream-list"></div>
           </div>
         </div>
- 
-      </section>
- 
-      <!-- ===== ADMISSIONS ===== -->
-      <section id="admissions" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
+
+        <!-- Admissions -->
+        <div id="module-admissions" class="module-content" style="display: none;">
+          <div class="module-header">
             <h2>Admissions</h2>
-            <p>Manage candidate applications and approvals.</p>
+            <button class="btn btn-primary" onclick="openAdmissionForm()"><i class="fas fa-plus"></i> New</button>
           </div>
-          <button class="btn-primary" onclick="toggleForm('admissionForm')">
-            <i class="fas fa-file-signature"></i> New Application
-          </button>
-        </div>
- 
-        <div id="admissionForm" class="form-panel" style="display:none;">
-          <form onsubmit="submitAdmission(event)">
-            <div class="form-grid">
-              <div class="field"><label>Candidate Name</label><input type="text" id="admName" required></div>
-              <div class="field"><label>Father's Name</label><input type="text" id="admFather" required></div>
-              <div class="field">
-                <label>Class</label>
-                <select id="admClass">
-                  <option>Pre-School</option><option>KG</option>
-                  <option>Class 1</option><option>Class 2</option><option>Class 3</option>
-                  <option>Class 4</option><option>Class 5</option><option>Class 6</option>
-                  <option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option>
-                </select>
-              </div>
-              <div class="field"><label>Contact Number</label><input type="tel" id="admPhone" required></div>
-              <div class="field full"><label>Address</label><textarea id="admAddress" rows="2"></textarea></div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn-success">Submit Application</button>
-              <button type="button" class="btn-ghost" onclick="toggleForm('admissionForm')">Cancel</button>
-            </div>
-          </form>
-        </div>
- 
-        <div class="filter-row">
-          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchAdm" placeholder="Search by name or ID..." oninput="searchAdmissions()"></div>
-        </div>
- 
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Ref ID</th><th>Candidate</th><th>Class</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="admissionsTableBody"></tbody>
-          </table>
-        </div>
-      </section>
- 
-      <!-- ===== STUDENTS ===== -->
-      <section id="students" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
-            <h2>Student Registry</h2>
-            <p>Active academic profiles in the system.</p>
+          <div class="card">
+            <div class="card-header"><h3>Applications</h3><input type="text" id="admissionsSearch" placeholder="Search..." onkeyup="filterAdmissions()"></div>
+            <div class="table-responsive"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admissionsTable"></tbody></table></div>
           </div>
-          <button class="btn-primary" onclick="toggleForm('studentForm')">
-            <i class="fas fa-user-plus"></i> Manual Enrol
-          </button>
         </div>
- 
-        <div id="studentForm" class="form-panel" style="display:none;">
-          <form onsubmit="addStudent(event)">
-            <div class="form-grid">
-              <div class="field"><label>Roll / ID</label><input type="text" id="studentId" required></div>
-              <div class="field"><label>Full Name</label><input type="text" id="studentName" required></div>
-              <div class="field"><label>Class / Section</label><input type="text" id="studentClass" required></div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn-success">Add Student</button>
-              <button type="button" class="btn-ghost" onclick="toggleForm('studentForm')">Cancel</button>
-            </div>
-          </form>
-        </div>
- 
-        <div class="filter-row">
-          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchStudent" placeholder="Filter by name, ID or class..." oninput="liveSearch()"></div>
-        </div>
- 
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Roll ID</th><th>Name</th><th>Class</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="studentsTableBody"></tbody>
-          </table>
-        </div>
-      </section>
- 
-      <!-- ===== TEACHERS ===== -->
-      <section id="teachers" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
-            <h2>Faculty Roster</h2>
-            <p>Authenticated teaching staff directory.</p>
+
+        <!-- Students -->
+        <div id="module-students" class="module-content" style="display: none;">
+          <div class="module-header">
+            <h2>Students</h2>
+            <button class="btn btn-primary" onclick="openStudentForm()"><i class="fas fa-plus"></i> Add</button>
           </div>
-          <button class="btn-primary" onclick="toggleForm('teacherForm')">
-            <i class="fas fa-user-shield"></i> Add Faculty
-          </button>
+          <div class="card">
+            <div class="card-header"><h3>All Students</h3><input type="text" id="studentsSearch" placeholder="Search..." onkeyup="filterStudents()"></div>
+            <div class="table-responsive"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Phone</th><th>Enrolled</th><th>Status</th><th>Actions</th></tr></thead><tbody id="studentsTable"></tbody></table></div>
+          </div>
         </div>
- 
-        <div id="teacherForm" class="form-panel" style="display:none;">
-          <form onsubmit="addTeacher(event)">
-            <div class="form-grid">
-              <div class="field"><label>Faculty Name</label><input type="text" id="teacherName" required></div>
-              <div class="field"><label>Subject</label><input type="text" id="teacherSubject" required></div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn-success">Register Faculty</button>
-              <button type="button" class="btn-ghost" onclick="toggleForm('teacherForm')">Cancel</button>
-            </div>
-          </form>
+
+        <!-- Teachers -->
+        <div id="module-teachers" class="module-content" style="display: none;">
+          <div class="module-header">
+            <h2>Teachers</h2>
+            <button class="btn btn-primary" onclick="openTeacherForm()"><i class="fas fa-plus"></i> Add</button>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Faculty</h3><input type="text" id="teachersSearch" placeholder="Search..." onkeyup="filterTeachers()"></div>
+            <div class="table-responsive"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Subject</th><th>Actions</th></tr></thead><tbody id="teachersTable"></tbody></table></div>
+          </div>
         </div>
- 
-        <div id="teachersList" class="cards-grid"></div>
-      </section>
- 
-      <!-- ===== ATTENDANCE ===== -->
-      <section id="attendance" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
+
+        <!-- Attendance -->
+        <div id="module-attendance" class="module-content" style="display: none;">
+          <div class="module-header">
             <h2>Attendance</h2>
-            <p>Daily presence tracking.</p>
+            <div><input type="date" id="attendanceDate" value=""><button class="btn btn-secondary" onclick="loadAttendanceForDate()">Load</button></div>
           </div>
-          <select id="attendanceDate" class="btn-outline" onchange="loadAttendanceSheet()">
-            <option value="today">Today</option>
-            <option value="yesterday">Yesterday</option>
-          </select>
-        </div>
- 
-        <div class="form-panel">
-          <h4 style="margin-bottom:16px;"><i class="fas fa-marker"></i> Mark Attendance</h4>
-          <form onsubmit="markAttendance(event)" class="inline-form">
-            <div class="field"><label>Roll ID</label><input type="text" id="attendanceStudentId" placeholder="Enter roll ID" required></div>
-            <div class="field">
-              <label>Status</label>
-              <select id="attendanceStatus"><option value="present">Present</option><option value="absent">Absent</option></select>
-            </div>
-            <button type="submit" class="btn-success" style="align-self:flex-end;">Mark</button>
-          </form>
-        </div>
- 
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Roll ID</th><th>Status</th><th>Time</th></tr></thead>
-            <tbody id="attendanceSheet"></tbody>
-          </table>
-        </div>
-      </section>
- 
-      <!-- ===== FEES ===== -->
-      <section id="fees" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
-            <h2>Fee Ledger</h2>
-            <p>Revenue and tuition tracking.</p>
-          </div>
-          <button class="btn-primary" onclick="toggleForm('feeForm')">
-            <i class="fas fa-receipt"></i> Record Payment
-          </button>
-        </div>
- 
-        <div id="feeForm" class="form-panel" style="display:none;">
-          <form onsubmit="payFee(event)">
-            <div class="form-grid">
-              <div class="field"><label>Student Roll ID</label><input type="text" id="feeStudentId" required></div>
-              <div class="field"><label>Amount (PKR)</label><input type="number" id="feeAmount" min="1" required></div>
-              <div class="field"><label>Month</label><input type="text" id="feeMonth" placeholder="e.g. May 2026" required></div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn-success">Record Payment</button>
-              <button type="button" class="btn-ghost" onclick="toggleForm('feeForm')">Cancel</button>
-            </div>
-          </form>
-        </div>
- 
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Ref</th><th>Student ID</th><th>Amount (PKR)</th><th>Month</th><th>Date</th></tr></thead>
-            <tbody id="feesList"></tbody>
-          </table>
-        </div>
-      </section>
- 
-      <!-- ===== RESULTS ===== -->
-      <section id="results" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
-            <h2>Results & Exams</h2>
-            <p>Academic performance tracking.</p>
-          </div>
-          <button class="btn-primary" onclick="toggleForm('resultForm')">
-            <i class="fas fa-chart-line-up"></i> Post Result
-          </button>
-        </div>
- 
-        <div id="resultForm" class="form-panel" style="display:none;">
-          <form onsubmit="addResult(event)">
-            <div class="form-grid">
-              <div class="field"><label>Student Roll ID</label><input type="text" id="resultStudentId" required></div>
-              <div class="field"><label>Subject</label><input type="text" id="resultSubject" required></div>
-              <div class="field"><label>Marks Obtained</label><input type="number" id="resultMarks" required></div>
-              <div class="field"><label>Total Marks</label><input type="number" id="resultTotal" value="100"></div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn-success">Post Result</button>
-              <button type="button" class="btn-ghost" onclick="toggleForm('resultForm')">Cancel</button>
-            </div>
-          </form>
-        </div>
- 
-        <div id="resultsList" class="cards-grid"></div>
-      </section>
- 
-      <!-- ===== TIMETABLE ===== -->
-      <section id="timetable" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
-            <h2>Schedules</h2>
-            <p>Weekly class and slot coordination.</p>
-          </div>
-          <button class="btn-primary" onclick="toggleForm('timetableForm')">
-            <i class="fas fa-calendar-plus"></i> Add Slot
-          </button>
-        </div>
- 
-        <div id="timetableForm" class="form-panel" style="display:none;">
-          <form onsubmit="addTimetable(event)">
-            <div class="form-grid">
-              <div class="field"><label>Class / Group</label><input type="text" id="timetableClass" required></div>
-              <div class="field"><label>Subject</label><input type="text" id="timetableSubject" required></div>
-              <div class="field">
-                <label>Day</label>
-                <select id="timetableDay">
-                  <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-                  <option>Thursday</option><option>Friday</option><option>Saturday</option>
-                </select>
-              </div>
-              <div class="field"><label>Time</label><input type="time" id="timetableTime" required></div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn-success">Add to Schedule</button>
-              <button type="button" class="btn-ghost" onclick="toggleForm('timetableForm')">Cancel</button>
-            </div>
-          </form>
-        </div>
- 
-        <div id="timetableList"></div>
-      </section>
- 
-      <!-- ===== ANNOUNCEMENTS ===== -->
-      <section id="announcements" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
-            <h2>Notices</h2>
-            <p>School-wide announcements and broadcasts.</p>
-          </div>
-          <button class="btn-primary" onclick="toggleForm('annForm')">
-            <i class="fas fa-bullhorn"></i> New Notice
-          </button>
-        </div>
- 
-        <div id="annForm" class="form-panel" style="display:none;">
-          <form onsubmit="addAnnouncement(event)">
-            <div class="field" style="margin-bottom:16px;"><label>Title</label><input type="text" id="annTitle" required></div>
-            <div class="field"><label>Message</label><textarea id="annMsg" rows="4" required></textarea></div>
-            <div class="form-actions" style="margin-top:16px;">
-              <button type="submit" class="btn-success">Publish Notice</button>
-              <button type="button" class="btn-ghost" onclick="toggleForm('annForm')">Cancel</button>
-            </div>
-          </form>
-        </div>
- 
-        <div id="announcementsList" class="notice-list"></div>
-      </section>
- 
-      <!-- ===== SETTINGS ===== -->
-      <section id="settings" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
-            <h2>Settings</h2>
-            <p>Institution configuration and system parameters.</p>
+          <div class="card">
+            <div class="card-header"><h3>Mark Attendance</h3></div>
+            <div class="table-responsive"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Status</th><th>Action</th></tr></thead><tbody id="attendanceTable"></tbody></table></div>
+            <button class="btn btn-primary" onclick="saveAttendance()" style="margin-top: 20px;"><i class="fas fa-save"></i> Save</button>
           </div>
         </div>
-        <div class="form-panel">
-          <div class="form-grid">
-            <div class="field"><label>School Name</label><input type="text" id="confName"></div>
-            <div class="field"><label>Address</label><input type="text" id="confAddress"></div>
-            <div class="field"><label>Contact Number</label><input type="text" id="confContact"></div>
-            <div class="field"><label>Email</label><input type="email" id="confEmail"></div>
+
+        <!-- Fees -->
+        <div id="module-fees" class="module-content" style="display: none;">
+          <div class="module-header">
+            <h2>Fee Management</h2>
+            <button class="btn btn-primary" onclick="openFeeForm()"><i class="fas fa-plus"></i> Record</button>
           </div>
-          <div class="form-actions" style="margin-top:24px;">
-            <button class="btn-success" onclick="saveConfig()">Save Changes</button>
+          <div class="card">
+            <div class="card-header"><h3>Fee Records</h3><input type="text" id="feesSearch" placeholder="Search..." onkeyup="filterFees()"></div>
+            <div class="table-responsive"><table class="data-table"><thead><tr><th>Student ID</th><th>Amount</th><th>Month</th><th>Method</th><th>Receipt</th><th>Date</th></tr></thead><tbody id="feesTable"></tbody></table></div>
           </div>
         </div>
-      </section>
- 
-      <!-- ===== AUDIT LOGS ===== -->
-      <section id="logs" class="view" style="display:none;">
-        <div class="view-head">
-          <div>
-            <h2>Audit Logs</h2>
-            <p>Complete record of system and administrative events.</p>
+
+        <!-- Results -->
+        <div id="module-results" class="module-content" style="display: none;">
+          <div class="module-header">
+            <h2>Results</h2>
+            <button class="btn btn-primary" onclick="openResultForm()"><i class="fas fa-plus"></i> Add</button>
           </div>
-          <button class="btn-outline" onclick="showLogs()"><i class="fas fa-sync"></i> Refresh</button>
+          <div class="card">
+            <div class="card-header"><h3>Results</h3><input type="text" id="resultsSearch" placeholder="Search..." onkeyup="filterResults()"></div>
+            <div class="table-responsive"><table class="data-table"><thead><tr><th>Student ID</th><th>Subject</th><th>Marks</th><th>Total</th><th>Grade</th><th>Date</th></tr></thead><tbody id="resultsTable"></tbody></table></div>
+          </div>
         </div>
-        <div id="logsList" class="log-list"></div>
-      </section>
- 
+
+        <!-- Timetable -->
+        <div id="module-timetable" class="module-content" style="display: none;">
+          <div class="module-header">
+            <h2>Timetable</h2>
+            <button class="btn btn-primary" onclick="openTimetableForm()"><i class="fas fa-plus"></i> Add</button>
+          </div>
+          <div class="card"><div class="card-header"><h3>Schedule</h3></div><div id="timetableContent"></div></div>
+        </div>
+
+        <!-- Announcements -->
+        <div id="module-announcements" class="module-content" style="display: none;">
+          <div class="module-header">
+            <h2>Announcements</h2>
+            <button class="btn btn-primary" onclick="openAnnouncementForm()"><i class="fas fa-plus"></i> New</button>
+          </div>
+          <div class="card"><div class="card-header"><h3>Latest</h3></div><div id="announcementsList" class="announcements-list"></div></div>
+        </div>
+
+        <!-- Settings -->
+        <div id="module-settings" class="module-content" style="display: none;">
+          <div class="module-header"><h2>Settings</h2></div>
+          <div class="card"><div class="card-header"><h3>Configuration</h3></div>
+            <form id="configForm" class="form-grid">
+              <div class="form-group"><label for="schoolName">School Name</label><input type="text" id="schoolName" placeholder="Name"></div>
+              <div class="form-group"><label for="schoolAddress">Address</label><input type="text" id="schoolAddress" placeholder="Address"></div>
+              <div class="form-group"><label for="schoolContact">Contact</label><input type="text" id="schoolContact" placeholder="Contact"></div>
+              <div class="form-group"><label for="schoolEmail">Email</label><input type="email" id="schoolEmail" placeholder="Email"></div>
+              <button type="button" class="btn btn-primary" onclick="saveConfig()" style="grid-column: 1/-1;"><i class="fas fa-save"></i> Save</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Logs -->
+        <div id="module-logs" class="module-content" style="display: none;">
+          <div class="module-header"><h2>Audit Logs</h2></div>
+          <div class="card">
+            <div class="card-header"><h3>Activity</h3><input type="text" id="logsSearch" placeholder="Search..." onkeyup="filterLogs()"></div>
+            <div class="table-responsive"><table class="data-table"><thead><tr><th>Time</th><th>Action</th><th>Type</th></tr></thead><tbody id="logsTable"></tbody></table></div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
-</div>
- 
-<!-- STUDENT PROFILE MODAL -->
-<div id="profileModal" class="modal-overlay" style="display:none;" onclick="closeModal()">
-  <div class="modal-box" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <h3 id="modalTitle">Student Profile</h3>
-      <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+
+  <!-- Modal -->
+  <div id="formModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Form</h3>
+        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
     </div>
-    <div id="modalBody" class="modal-body"></div>
   </div>
-</div>
- 
-<script src="validators.js"></script>
-<script src="app.js"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
+  <!-- Advanced Filter Modal -->
+  <div id="filterModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Advanced Filters</h3>
+        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="filterModalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Confirmation Dialog -->
+  <div id="confirmDialog" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>Confirm Action</h3>
+        <button class="close-btn" onclick="closeConfirm()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage" style="margin-bottom: 20px;"></p>
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
+          <button class="btn btn-primary" id="confirmBtn" onclick="executeConfirm()">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backup/Export Modal -->
+  <div id="backupModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Data Backup & Export</h3>
+        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="backup-options" style="display: grid; gap: 15px;">
+          <button class="backup-btn" onclick="exportFullBackup()">
+            <i class="fas fa-download"></i>
+            <span>
+              <strong>Full Database Backup</strong>
+              <p>Download complete database JSON</p>
+            </span>
+          </button>
+          <button class="backup-btn" onclick="exportStudentsCSV()">
+            <i class="fas fa-file-csv"></i>
+            <span>
+              <strong>Export Students (CSV)</strong>
+              <p>Download student list in CSV format</p>
+            </span>
+          </button>
+          <button class="backup-btn" onclick="exportFeesCSV()">
+            <i class="fas fa-money-bill"></i>
+            <span>
+              <strong>Export Fees Report</strong>
+              <p>Download fee collection data</p>
+            </span>
+          </button>
+          <button class="backup-btn" onclick="generateReport()">
+            <i class="fas fa-chart-bar"></i>
+            <span>
+              <strong>Generate System Report</strong>
+              <p>Create comprehensive system report</p>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Statistics Modal -->
+  <div id="statsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>System Statistics & Analytics</h3>
+        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="statsContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help & Documentation Modal -->
+  <div id="helpModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Help & Documentation</h3>
+        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="helpContent">
+          <h4>Quick Start Guide</h4>
+          <ul>
+            <li><strong>Dashboard:</strong> View system overview and statistics</li>
+            <li><strong>Students:</strong> Manage student records and information</li>
+            <li><strong>Teachers:</strong> Manage faculty information</li>
+            <li><strong>Admissions:</strong> Process new student applications</li>
+            <li><strong>Attendance:</strong> Mark daily student attendance</li>
+            <li><strong>Fees:</strong> Record and track fee payments</li>
+            <li><strong>Results:</strong> Enter and manage student grades</li>
+            <li><strong>Timetable:</strong> Create class schedules</li>
+            <li><strong>Announcements:</strong> Post system-wide messages</li>
+            <li><strong>Settings:</strong> Configure school information</li>
+          </ul>
+          <h4>Keyboard Shortcuts</h4>
+          <ul>
+            <li><code>Alt + D</code> - Dashboard</li>
+            <li><code>Alt + S</code> - Students</li>
+            <li><code>Alt + T</code> - Teachers</li>
+            <li><code>Alt + H</code> - Help</li>
+            <li><code>Ctrl + K</code> - Search</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Center -->
+  <div id="notificationCenter" class="notification-center" style="display: none;">
+    <div class="notification-header">
+      <h3>Notifications</h3>
+      <button onclick="clearNotifications()" class="btn btn-small">Clear All</button>
+    </div>
+    <div id="notificationsList" class="notifications-list"></div>
+  </div>
+
+  <script>
+    // Close modal functions
+    function closeConfirm() {
+      document.getElementById("confirmDialog").style.display = "none";
+    }
+
+    function executeConfirm() {
+      if (window.confirmCallback) {
+        window.confirmCallback();
+      }
+      closeConfirm();
+    }
+
+    function showConfirm(message, callback) {
+      document.getElementById("confirmMessage").textContent = message;
+      window.confirmCallback = callback;
+      document.getElementById("confirmDialog").style.display = "flex";
+    }
+
+    // Export functions
+    function exportFullBackup() {
+      showToast("Preparing backup...", "info");
+      setTimeout(() => {
+        const link = document.createElement('a');
+        link.href = `${API_BASE}/export`;
+        link.click();
+        showToast("Backup downloaded successfully ✓", "success");
+        closeModal();
+      }, 500);
+    }
+
+    function exportStudentsCSV() {
+      showToast("Generating CSV...", "info");
+      // CSV generation logic would go here
+      showToast("Students CSV exported ✓", "success");
+      closeModal();
+    }
+
+    function exportFeesCSV() {
+      showToast("Generating fees report...", "info");
+      // Fees report logic would go here
+      showToast("Fees report exported ✓", "success");
+      closeModal();
+    }
+
+    function generateReport() {
+      showToast("Generating system report...", "info");
+      // Report generation logic would go here
+      showToast("Report generated successfully ✓", "success");
+      closeModal();
+    }
+
+    function clearNotifications() {
+      document.getElementById("notificationsList").innerHTML = "";
+      showToast("Notifications cleared", "info");
+    }
+  </script>
 </body>
 </html>

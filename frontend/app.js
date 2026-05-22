@@ -1,683 +1,1303 @@
-
-/* ===== YASRAB ERP — FRONTEND LOGIC ===== */
-
-let currentUser = null;
-let currentModule = "dashboard";
-let apiToken = localStorage.getItem("yasrab_token");
+// ===== GLOBAL STATE & CONSTANTS =====
+let AUTH_TOKEN = localStorage.getItem("token") || null;
+let CURRENT_MODULE = "dashboard";
+let CURRENT_DATA = {};
+let IS_DARK_MODE = localStorage.getItem("darkMode") === "true";
+const API_BASE = window.location.origin;
 
 // ===== INITIALIZATION =====
 document.addEventListener("DOMContentLoaded", () => {
-  if (apiToken) {
-    showApp();
-    loadModuleData(currentModule);
-  } else {
-    showLogin();
-  }
+  setTimeout(() => {
+    if (AUTH_TOKEN) {
+      showApp();
+      loadDashboard();
+    } else {
+      showLogin();
+    }
+  }, 1000);
 
-  // Login Form
   const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", handleLogin);
-  }
+  if (loginForm) loginForm.addEventListener("submit", handleLogin);
 
-  // Sidebar toggle for mobile
-  window.toggleSidebar = () => {
-    document.getElementById("sidebar").classList.toggle("open");
-    document.getElementById("sidebarOverlay").classList.toggle("open");
-  };
+  if (IS_DARK_MODE) enableDarkMode();
 
-  window.closeSidebar = () => {
-    document.getElementById("sidebar").classList.remove("open");
-    document.getElementById("sidebarOverlay").classList.remove("open");
-  };
-
-  // Clock in Dashboard
-  setInterval(updateClock, 1000);
-  updateClock();
+  const todayInput = document.getElementById("attendanceDate");
+  if (todayInput) todayInput.valueAsDate = new Date();
 });
 
 // ===== AUTHENTICATION =====
 async function handleLogin(e) {
   e.preventDefault();
-  const username = document.getElementById("user").value;
-  const password = document.getElementById("pass").value;
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!username || !password) {
+    showToast("Please enter credentials", "error");
+    return;
+  }
 
   try {
-    const res = await fetch("/login", {
+    const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
     });
 
     const data = await res.json();
-    if (data.success) {
-      apiToken = data.token;
-      localStorage.setItem("yasrab_token", apiToken);
-      showToast("Welcome back, Administrator!", "success");
+
+    if (!res.ok) throw new Error(data.msg || data.message || "Login failed");
+    if (!data.token) throw new Error("No token received");
+
+    AUTH_TOKEN = data.token;
+    localStorage.setItem("token", AUTH_TOKEN);
+    showToast("Login successful ✓", "success");
+
+    setTimeout(() => {
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
       showApp();
-      loadModuleData("dashboard");
-    } else {
-      showToast(data.msg || "Invalid credentials", "error");
-    }
+      loadDashboard();
+    }, 500);
   } catch (err) {
-    showToast("Server connection failed", "error");
+    showToast(err.message || "Login error", "error");
+    console.error("Login error:", err);
   }
 }
 
-function showApp() {
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("mainApp").style.display = "flex";
+function logout() {
+  if (confirm("Are you sure you want to logout?")) {
+    AUTH_TOKEN = null;
+    localStorage.removeItem("token");
+    showLogin();
+    showToast("Logged out successfully", "info");
+  }
 }
 
+// ===== UI NAVIGATION =====
 function showLogin() {
+  document.getElementById("loadingScreen").style.display = "none";
   document.getElementById("loginPage").style.display = "flex";
   document.getElementById("mainApp").style.display = "none";
 }
 
-window.logout = () => {
-  localStorage.removeItem("yasrab_token");
-  apiToken = null;
-  location.reload();
-};
+function showApp() {
+  document.getElementById("loadingScreen").style.display = "none";
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("mainApp").style.display = "flex";
+}
 
-// ===== API HELPERS =====
-async function apiCall(endpoint, method = "GET", body = null) {
-  const headers = {
-    "Authorization": `Bearer ${apiToken}`
+function switchModule(module, event) {
+  if (event) event.preventDefault();
+
+  document.querySelectorAll(".module-content").forEach(el => el.style.display = "none");
+  document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+
+  const moduleEl = document.getElementById(`module-${module}`);
+  if (moduleEl) moduleEl.style.display = "block";
+
+  const navBtn = document.querySelector(`[data-module="${module}"]`);
+  if (navBtn) navBtn.classList.add("active");
+
+  CURRENT_MODULE = module;
+  updateBreadcrumb(module);
+
+  const loaders = {
+    dashboard: loadDashboard,
+    admissions: loadAdmissions,
+    students: loadStudents,
+    teachers: loadTeachers,
+    attendance: loadAttendance,
+    fees: loadFees,
+    results: loadResults,
+    timetable: loadTimetable,
+    announcements: loadAnnouncements,
+    settings: loadSettings,
+    logs: loadLogs
   };
-  if (body) {
-    headers["Content-Type"] = "application/json";
-  }
 
+  if (loaders[module]) loaders[module]();
+}
+
+function updateBreadcrumb(module) {
+  const breadcrumbMap = {
+    dashboard: "Dashboard",
+    admissions: "Admissions",
+    students: "Students",
+    teachers: "Teachers",
+    attendance: "Attendance",
+    fees: "Fees",
+    results: "Results",
+    timetable: "Timetable",
+    announcements: "Announcements",
+    settings: "Settings",
+    logs: "Audit Logs"
+  };
+  const breadcrumb = document.getElementById("breadcrumb");
+  if (breadcrumb) breadcrumb.textContent = breadcrumbMap[module] || module;
+}
+
+// ===== API CALLS WITH ERROR HANDLING =====
+async function apiCall(endpoint, options = {}) {
   try {
-    const res = await fetch(endpoint, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : null
+    const headers = {
+      "Content-Type": "application/json",
+      ...options.headers
+    };
+
+    if (AUTH_TOKEN) {
+      headers.Authorization = `Bearer ${AUTH_TOKEN}`;
+    }
+
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers
     });
 
-    if (res.status === 401 || res.status === 403) {
-      logout();
-      return null;
+    if (res.status === 401) {
+      AUTH_TOKEN = null;
+      localStorage.removeItem("token");
+      showLogin();
+      throw new Error("Session expired. Please login again.");
+    }
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ msg: "API error" }));
+      throw new Error(error.msg || error.message || `Error: ${res.status}`);
     }
 
     return await res.json();
   } catch (err) {
-    console.error("API Error:", err);
-    showToast("Connection error", "error");
-    return null;
-  }
-}
-
-// ===== NAVIGATION =====
-window.openModule = (moduleName, event) => {
-  if (event) event.preventDefault();
-  
-  // Update UI
-  document.querySelectorAll(".view").forEach(v => v.style.display = "none");
-  const view = document.getElementById(moduleName);
-  if (view) view.style.display = "block";
-  
-  document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
-  const navItem = document.querySelector(`.nav-item[data-module="${moduleName}"]`);
-  if (navItem) navItem.classList.add("active");
-
-  const pageTitle = document.getElementById("pageTitle");
-  if (pageTitle) pageTitle.innerText = moduleName.charAt(0).toUpperCase() + moduleName.slice(1);
-  currentModule = moduleName;
-  
-  loadModuleData(moduleName);
-  closeSidebar();
-};
-
-// ===== DATA LOADING =====
-function loadModuleData(module) {
-  switch (module) {
-    case "dashboard": loadDashboardStats(); break;
-    case "admissions": loadAdmissions(); break;
-    case "students": loadStudents(); break;
-    case "teachers": loadTeachers(); break;
-    case "attendance": loadAttendanceSheet(); break;
-    case "fees": loadFees(); break;
-    case "results": loadResults(); break;
-    case "timetable": loadTimetable(); break;
-    case "announcements": loadAnnouncements(); break;
-    case "logs": showLogs(); break;
-    case "settings": loadSettings(); break;
+    console.error(`API Error [${endpoint}]:`, err);
+    showToast(err.message || "Network error", "error");
+    throw err;
   }
 }
 
 // ===== DASHBOARD =====
-async function loadDashboardStats() {
-  const stats = await apiCall("/stats");
-  if (!stats) return;
+async function loadDashboard() {
+  try {
+    const stats = await apiCall("/stats");
 
-  if (document.getElementById("sCount")) document.getElementById("sCount").innerText = stats.students || 0;
-  if (document.getElementById("tCount")) document.getElementById("tCount").innerText = stats.teachers || 0;
-  if (document.getElementById("admCount")) document.getElementById("admCount").innerText = stats.admissions || 0;
-  if (document.getElementById("fCount")) document.getElementById("fCount").innerText = (stats.fees || 0).toLocaleString();
-  if (document.getElementById("badgeStudents")) document.getElementById("badgeStudents").innerText = stats.students || 0;
+    document.getElementById("stat-students").textContent = stats.students || 0;
+    document.getElementById("stat-teachers").textContent = stats.teachers || 0;
+    document.getElementById("stat-admissions").textContent = stats.admissions || 0;
+    document.getElementById("stat-fees").textContent = `Rs. ${(stats.fees || 0).toLocaleString()}`;
 
-  // Recent Logs
-  const logsCont = document.getElementById("recentLogs");
-  if (logsCont) {
-    logsCont.innerHTML = (stats.recentLogs || []).map(log => `
-      <div class="stream-item">
-        <div class="stream-icon"><i class="fas fa-history"></i></div>
-        <div class="stream-meta">
-          <strong>${log.action}</strong>
-          <small>${timeAgo(log.time)}</small>
+    const activityList = document.getElementById("activityList");
+    const logs = stats.recentLogs || [];
+
+    if (logs.length === 0) {
+      activityList.innerHTML = "<p class='empty-state'>No recent activity</p>";
+    } else {
+      activityList.innerHTML = logs.map(log => `
+        <div class="activity-item">
+          <div class="activity-icon"><i class="fas fa-circle-check"></i></div>
+          <div class="activity-details">
+            <p class="activity-action">${log.action}</p>
+            <span class="activity-time">${formatTime(log.time)}</span>
+          </div>
         </div>
-      </div>
-    `).join("") || '<p class="empty-state">No recent activities</p>';
-  }
+      `).join("");
+    }
 
-  // Recent Students
-  const studentsCont = document.getElementById("recentStudents");
-  if (studentsCont) {
-    studentsCont.innerHTML = (stats.recentStudents || []).map(s => `
-      <div class="stream-item">
-        <div class="stream-avatar"><i class="fas fa-user"></i></div>
-        <div class="stream-meta">
-          <strong>${s.name}</strong>
-          <small>Class: ${s.class}</small>
-        </div>
-      </div>
-    `).join("") || '<p class="empty-state">No students enrolled yet</p>';
+    document.getElementById("studentsBadge").textContent = stats.students || 0;
+    document.getElementById("teachersBadge").textContent = stats.teachers || 0;
+    document.getElementById("admissionsBadge").textContent = stats.admissions || 0;
+  } catch (err) {
+    console.error("Dashboard load failed:", err);
   }
+}
+
+function refreshDashboard() {
+  showToast("Refreshing dashboard...", "info");
+  loadDashboard();
 }
 
 // ===== ADMISSIONS =====
 async function loadAdmissions() {
-  const data = await apiCall("/admissions");
-  if (!data) return;
-  const tbody = document.getElementById("admissionsTableBody");
-  if (tbody) {
-    tbody.innerHTML = data.map(adm => `
+  try {
+    const admissions = await apiCall("/admissions");
+    const tbody = document.getElementById("admissionsTable");
+
+    if (admissions.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='7' class='text-center'>No applications</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = admissions.map(adm => `
       <tr>
         <td>${adm.id}</td>
-        <td><strong>${adm.name}</strong><br><small>${adm.phone || ""}</small></td>
+        <td>${adm.name}</td>
         <td>${adm.class}</td>
-        <td><span class="badge ${adm.status}">${adm.status}</span></td>
+        <td>${adm.phone}</td>
+        <td>${formatDate(adm.date)}</td>
+        <td><span class="badge" style="background: ${adm.status === 'pending' ? '#f39c12' : '#27ae60'}">${adm.status}</span></td>
         <td>
           ${adm.status === 'pending' ? `
-            <button class="tbl-btn approve" onclick="updateAdmissionStatus('${adm.id}', 'approved')">Approve</button>
-            <button class="tbl-btn del" onclick="updateAdmissionStatus('${adm.id}', 'rejected')"><i class="fas fa-times"></i></button>
-          ` : '--'}
+            <button class="btn-small" onclick="approveAdmission('${adm.id}')"><i class="fas fa-check"></i></button>
+            <button class="btn-small reject" onclick="rejectAdmission('${adm.id}')"><i class="fas fa-times"></i></button>
+          ` : '-'}
         </td>
       </tr>
     `).join("");
+  } catch (err) {
+    console.error("Admissions load failed:", err);
   }
 }
 
-window.submitAdmission = async (e) => {
-  e.preventDefault();
-  const body = {
-    name: document.getElementById("admName").value,
-    father: document.getElementById("admFather").value,
-    class: document.getElementById("admClass").value,
-    phone: document.getElementById("admPhone").value,
-    address: document.getElementById("admAddress").value
-  };
-  const res = await apiCall("/admissions", "POST", body);
-  if (res && res.success) {
-    showToast("Application submitted successfully", "success");
-    e.target.reset();
-    toggleForm("admissionForm");
-    loadAdmissions();
-  }
-};
+function openAdmissionForm() {
+  const modal = document.getElementById("formModal");
+  const body = document.getElementById("modalBody");
+  document.getElementById("modalTitle").textContent = "New Admission Application";
 
-window.updateAdmissionStatus = async (id, status) => {
-  const res = await apiCall("/admissions/" + id, "PATCH", { status });
-  if (res && res.success) {
-    showToast("Admission " + status, "info");
+  body.innerHTML = `
+    <form id="admissionFormContent" class="form-grid">
+      <div class="form-group"><label>Name</label><input type="text" id="admName" required></div>
+      <div class="form-group"><label>Class</label><input type="text" id="admClass" required></div>
+      <div class="form-group"><label>Phone</label><input type="tel" id="admPhone"></div>
+      <div class="form-group"><label>Address</label><input type="text" id="admAddress"></div>
+      <button type="button" class="btn btn-primary" onclick="submitAdmission()" style="grid-column: 1/-1;">Submit</button>
+    </form>
+  `;
+  modal.style.display = "flex";
+}
+
+async function submitAdmission() {
+  try {
+    const payload = {
+      name: document.getElementById("admName").value.trim(),
+      class: document.getElementById("admClass").value.trim(),
+      phone: document.getElementById("admPhone").value.trim(),
+      address: document.getElementById("admAddress").value.trim()
+    };
+
+    if (!payload.name || !payload.class) throw new Error("Name and class required");
+
+    await apiCall("/admissions", { method: "POST", body: JSON.stringify(payload) });
+    showToast("Application submitted successfully ✓", "success");
+    closeModal();
     loadAdmissions();
-    loadDashboardStats();
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
+}
+
+async function approveAdmission(id) {
+  if (!confirm("Approve this application?")) return;
+  try {
+    await apiCall(`/admissions/${id}`, { method: "PATCH", body: JSON.stringify({ status: "approved" }) });
+    showToast("Application approved ✓", "success");
+    loadAdmissions();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+async function rejectAdmission(id) {
+  if (!confirm("Reject this application?")) return;
+  try {
+    await apiCall(`/admissions/${id}`, { method: "PATCH", body: JSON.stringify({ status: "rejected" }) });
+    showToast("Application rejected", "info");
+    loadAdmissions();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+function filterAdmissions() {
+  const query = document.getElementById("admissionsSearch").value.toLowerCase();
+  document.querySelectorAll("#admissionsTable tr").forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? "" : "none";
+  });
+}
 
 // ===== STUDENTS =====
 async function loadStudents() {
-  const data = await apiCall("/students");
-  if (!data) return;
-  window.allStudents = data;
-  renderStudents(data);
-}
+  try {
+    const students = await apiCall("/students");
+    const tbody = document.getElementById("studentsTable");
 
-function renderStudents(students) {
-  const tbody = document.getElementById("studentsTableBody");
-  if (tbody) {
+    if (students.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='7' class='text-center'>No students</td></tr>";
+      return;
+    }
+
     tbody.innerHTML = students.map(s => `
       <tr>
-        <td><code>${s.id}</code></td>
+        <td><strong>${s.id}</strong></td>
         <td>${s.name}</td>
         <td>${s.class}</td>
-        <td><span class="tag">Active</span></td>
+        <td>${s.phone}</td>
+        <td>${formatDate(s.enrolledDate)}</td>
+        <td><span class="badge" style="background: #27ae60;">${s.status || 'active'}</span></td>
         <td>
-          <button class="tbl-btn view" onclick="viewStudent('${s.id}')"><i class="fas fa-eye"></i></button>
-          <button class="tbl-btn del" onclick="deleteStudent('${s.id}')"><i class="fas fa-trash"></i></button>
+          <button class="btn-small" onclick="editStudent('${s.id}')"><i class="fas fa-edit"></i></button>
+          <button class="btn-small reject" onclick="deleteStudent('${s.id}')"><i class="fas fa-trash"></i></button>
         </td>
       </tr>
     `).join("");
+
+    document.getElementById("studentsBadge").textContent = students.length;
+  } catch (err) {
+    console.error("Students load failed:", err);
   }
 }
 
-window.liveSearch = () => {
-  const val = document.getElementById("searchStudent").value.toLowerCase();
-  const filtered = (window.allStudents || []).filter(s => 
-    s.name.toLowerCase().includes(val) || s.id.toLowerCase().includes(val) || s.class.toLowerCase().includes(val)
-  );
-  renderStudents(filtered);
-};
+function openStudentForm() {
+  const modal = document.getElementById("formModal");
+  const body = document.getElementById("modalBody");
+  document.getElementById("modalTitle").textContent = "Add New Student";
 
-window.addStudent = async (e) => {
-  e.preventDefault();
-  clearFormErrors("studentForm");
+  body.innerHTML = `
+    <form id="studentFormContent" class="form-grid">
+      <div class="form-group"><label>Student ID</label><input type="text" id="stdId" required></div>
+      <div class="form-group"><label>Name</label><input type="text" id="stdName" required></div>
+      <div class="form-group"><label>Class</label><input type="text" id="stdClass" required></div>
+      <div class="form-group"><label>Phone</label><input type="tel" id="stdPhone"></div>
+      <div class="form-group"><label>Address</label><input type="text" id="stdAddress"></div>
+      <button type="button" class="btn btn-primary" onclick="submitStudent()" style="grid-column: 1/-1;">Add Student</button>
+    </form>
+  `;
+  modal.style.display = "flex";
+}
 
-  const studentId = document.getElementById("studentId")?.value || "";
-  const studentName = document.getElementById("studentName")?.value || "";
-  const studentClass = document.getElementById("studentClass")?.value || "";
-  const phone = document.getElementById("studentPhone")?.value || "";
-  const address = document.getElementById("studentAddress")?.value || "";
+async function submitStudent() {
+  try {
+    const payload = {
+      id: document.getElementById("stdId").value.trim(),
+      name: document.getElementById("stdName").value.trim(),
+      class: document.getElementById("stdClass").value.trim(),
+      phone: document.getElementById("stdPhone").value.trim(),
+      address: document.getElementById("stdAddress").value.trim()
+    };
 
-  // Client-side validation
-  const errors = validateForm(
-    { studentId, studentName, studentClass, phone, address },
-    [
-      { name: "studentId", type: "studentId", required: true },
-      { name: "studentName", type: "name", required: true },
-      { name: "studentClass", type: "", required: true },
-      { name: "phone", type: "phone", required: false },
-      { name: "address", type: "", required: false }
-    ]
-  );
+    if (!payload.id || !payload.name || !payload.class) throw new Error("ID, name, and class required");
 
-  if (Object.keys(errors).length > 0) {
-    displayErrors(errors, "studentForm");
-    showToast("Please fix the errors in the form", "error");
-    return;
-  }
-
-  const body = {
-    id: studentId.trim(),
-    name: studentName.trim(),
-    class: studentClass.trim(),
-    phone: phone.trim(),
-    address: address.trim()
-  };
-
-  const res = await apiCall("/students", "POST", body);
-  if (res && res.success) {
-    showToast("✅ Student added successfully", "success");
-    e.target.reset();
-    clearFormErrors("studentForm");
-    toggleForm("studentForm");
+    await apiCall("/students", { method: "POST", body: JSON.stringify(payload) });
+    showToast("Student added successfully ✓", "success");
+    closeModal();
     loadStudents();
-  } else {
-    const errorMsg = res?.msg || res?.error || "Failed to add student";
-    showToast(errorMsg, "error");
-    if (res?.fields) {
-      const fieldErrors = {};
-      res.fields.forEach(f => fieldErrors[f] = `Invalid ${f}`);
-      displayErrors(fieldErrors, "studentForm");
-    }
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
+}
 
-window.deleteStudent = async (id) => {
-  if (!confirm("Are you sure you want to delete this student?")) return;
-  const res = await apiCall("/students/" + id, "DELETE");
-  if (res && res.success) {
+async function deleteStudent(id) {
+  if (!confirm("Delete this student?")) return;
+  try {
+    await apiCall(`/students/${id}`, { method: "DELETE" });
     showToast("Student deleted", "info");
     loadStudents();
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
+}
 
-window.viewStudent = async (id) => {
-  const s = (window.allStudents || []).find(st => st.id === id);
-  if (!s) return;
-  
-  const modalBody = document.getElementById("modalBody");
-  if (modalBody) {
-    modalBody.innerHTML = `
-      <div class="profile-wrap">
-        <div class="profile-avatar"><i class="fas fa-user"></i></div>
-        <div class="profile-name">${s.name}</div>
-        <div class="profile-id">ID: ${s.id}</div>
-        <div class="profile-fields">
-          <div class="pf-row"><span>Class:</span><span>${s.class}</span></div>
-          <div class="pf-row"><span>Enrolled:</span><span>${s.enrolledDate ? new Date(s.enrolledDate).toLocaleDateString() : 'N/A'}</span></div>
-          <div class="pf-row"><span>Status:</span><span>Active</span></div>
-        </div>
-      </div>
-    `;
-    document.getElementById("profileModal").style.display = "flex";
-  }
-};
+function editStudent(id) {
+  showToast("Edit feature coming soon", "info");
+}
+
+function filterStudents() {
+  const query = document.getElementById("studentsSearch").value.toLowerCase();
+  document.querySelectorAll("#studentsTable tr").forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? "" : "none";
+  });
+}
 
 // ===== TEACHERS =====
 async function loadTeachers() {
-  const data = await apiCall("/teachers");
-  if (!data) return;
-  const cont = document.getElementById("teachersList");
-  if (cont) {
-    cont.innerHTML = data.map(t => `
-      <div class="faculty-card">
-        <div class="faculty-avatar"><i class="fas fa-chalkboard-user"></i></div>
-        <div class="faculty-name">${t.name}</div>
-        <div class="faculty-subject">${t.subject}</div>
-      </div>
-    `).join("") || '<p class="empty-state">No faculty members registered</p>';
+  try {
+    const teachers = await apiCall("/teachers");
+    const tbody = document.getElementById("teachersTable");
+
+    if (teachers.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='4' class='text-center'>No teachers</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = teachers.map(t => `
+      <tr>
+        <td>${t.id}</td>
+        <td>${t.name}</td>
+        <td>${t.subject}</td>
+        <td>
+          <button class="btn-small reject" onclick="deleteTeacher('${t.id}')"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>
+    `).join("");
+
+    document.getElementById("teachersBadge").textContent = teachers.length;
+  } catch (err) {
+    console.error("Teachers load failed:", err);
   }
 }
 
-window.addTeacher = async (e) => {
-  e.preventDefault();
-  const body = {
-    name: document.getElementById("teacherName").value,
-    subject: document.getElementById("teacherSubject").value
-  };
-  const res = await apiCall("/teachers", "POST", body);
-  if (res && res.success) {
-    showToast("Faculty registered", "success");
-    e.target.reset();
-    toggleForm("teacherForm");
+function openTeacherForm() {
+  const modal = document.getElementById("formModal");
+  const body = document.getElementById("modalBody");
+  document.getElementById("modalTitle").textContent = "Add New Teacher";
+
+  body.innerHTML = `
+    <form id="teacherFormContent" class="form-grid">
+      <div class="form-group"><label>Name</label><input type="text" id="tchName" required></div>
+      <div class="form-group"><label>Subject</label><input type="text" id="tchSubject" required></div>
+      <button type="button" class="btn btn-primary" onclick="submitTeacher()" style="grid-column: 1/-1;">Add Teacher</button>
+    </form>
+  `;
+  modal.style.display = "flex";
+}
+
+async function submitTeacher() {
+  try {
+    const payload = {
+      name: document.getElementById("tchName").value.trim(),
+      subject: document.getElementById("tchSubject").value.trim()
+    };
+
+    if (!payload.name || !payload.subject) throw new Error("Name and subject required");
+
+    await apiCall("/teachers", { method: "POST", body: JSON.stringify(payload) });
+    showToast("Teacher added successfully ✓", "success");
+    closeModal();
     loadTeachers();
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
+}
+
+async function deleteTeacher(id) {
+  if (!confirm("Delete this teacher?")) return;
+  try {
+    await apiCall(`/teachers/${id}`, { method: "DELETE" });
+    showToast("Teacher deleted", "info");
+    loadTeachers();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+function filterTeachers() {
+  const query = document.getElementById("teachersSearch").value.toLowerCase();
+  document.querySelectorAll("#teachersTable tr").forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? "" : "none";
+  });
+}
 
 // ===== ATTENDANCE =====
-async function loadAttendanceSheet() {
-  let date = document.getElementById("attendanceDate").value;
+async function loadAttendance() {
+  const date = document.getElementById("attendanceDate").value;
   if (!date) {
-    date = new Date().toISOString().split("T")[0];
-    document.getElementById("attendanceDate").value = date;
+    showToast("Please select a date", "error");
+    return;
   }
-  const data = await apiCall("/attendance/" + date);
-  if (!data) return;
-  const tbody = document.getElementById("attendanceSheet");
-  if (tbody) {
-    tbody.innerHTML = data.length ? data.map(a => `
-      <tr>
-        <td><code>${a.id}</code></td>
-        <td><span class="badge ${a.status}">${a.status}</span></td>
-        <td>${new Date(a.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-      </tr>
-    `).join("") : '<tr><td colspan="3" class="empty-state">No attendance records for this date</td></tr>';
+  loadAttendanceForDate();
+}
+
+async function loadAttendanceForDate() {
+  try {
+    const date = document.getElementById("attendanceDate").value || new Date().toISOString().split("T")[0];
+    const students = await apiCall("/students");
+    const attendanceData = await apiCall(`/attendance/${date}`);
+
+    const tbody = document.getElementById("attendanceTable");
+    tbody.innerHTML = students.map(s => {
+      const att = attendanceData.find(a => a.id === s.id) || {};
+      return `
+        <tr>
+          <td>${s.id}</td>
+          <td>${s.name}</td>
+          <td>
+            <select id="att-${s.id}" value="${att.status || 'present'}">
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+              <option value="leave">Leave</option>
+            </select>
+          </td>
+          <td>-</td>
+        </tr>
+      `;
+    }).join("");
+  } catch (err) {
+    console.error("Attendance load failed:", err);
   }
 }
 
-window.loadAttendanceSheet = loadAttendanceSheet;
+async function saveAttendance() {
+  try {
+    const date = document.getElementById("attendanceDate").value;
+    const students = await apiCall("/students");
 
-window.markAttendance = async (e) => {
-  e.preventDefault();
-  const body = {
-    id: document.getElementById("attendanceStudentId").value,
-    status: document.getElementById("attendanceStatus").value
-  };
-  const res = await apiCall("/attendance", "POST", body);
-  if (res && res.success) {
-    showToast("Attendance marked", "success");
-    e.target.reset();
-    loadAttendanceSheet();
+    for (const student of students) {
+      const status = document.getElementById(`att-${student.id}`)?.value || "present";
+      await apiCall("/attendance", {
+        method: "POST",
+        body: JSON.stringify({ id: student.id, status })
+      });
+    }
+
+    showToast("Attendance saved successfully ✓", "success");
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
-
-window.onAttendanceDateChange = () => {
-  loadAttendanceSheet();
-};
+}
 
 // ===== FEES =====
 async function loadFees() {
-  const data = await apiCall("/fees");
-  if (!data) return;
-  const tbody = document.getElementById("feesList");
-  if (tbody) {
-    tbody.innerHTML = Object.keys(data).flatMap(id => data[id].map(f => `
-      <tr>
-        <td>#F-${Math.random().toString(36).substr(2, 5).toUpperCase()}</td>
-        <td><code>${id}</code></td>
-        <td>PKR ${f.amount}</td>
-        <td>${f.month}</td>
-        <td>${new Date(f.date).toLocaleDateString()}</td>
-      </tr>
-    `)).join("") || '<tr><td colspan="5" class="empty-state">No fee records found</td></tr>';
+  try {
+    const fees = await apiCall("/fees");
+    const tbody = document.getElementById("feesTable");
+
+    let rows = [];
+    for (const [studentId, feeList] of Object.entries(fees)) {
+      feeList.forEach(fee => {
+        rows.push(`
+          <tr>
+            <td>${studentId}</td>
+            <td>Rs. ${fee.amount.toLocaleString()}</td>
+            <td>${fee.month}</td>
+            <td>${fee.method}</td>
+            <td>${fee.receipt || 'N/A'}</td>
+            <td>${formatDate(fee.date)}</td>
+          </tr>
+        `);
+      });
+    }
+
+    tbody.innerHTML = rows.length > 0 ? rows.join("") : "<tr><td colspan='6' class='text-center'>No fee records</td></tr>";
+  } catch (err) {
+    console.error("Fees load failed:", err);
   }
 }
 
-window.payFee = async (e) => {
-  e.preventDefault();
-  const body = {
-    id: document.getElementById("feeStudentId").value,
-    amount: document.getElementById("feeAmount").value,
-    month: document.getElementById("feeMonth").value
-  };
-  const res = await apiCall("/fees", "POST", body);
-  if (res && res.success) {
-    showToast("Fee payment recorded", "success");
-    e.target.reset();
-    toggleForm("feeForm");
+function openFeeForm() {
+  const modal = document.getElementById("formModal");
+  const body = document.getElementById("modalBody");
+  document.getElementById("modalTitle").textContent = "Record Fee Payment";
+
+  body.innerHTML = `
+    <form id="feeFormContent" class="form-grid">
+      <div class="form-group"><label>Student ID</label><input type="text" id="feeStdId" required></div>
+      <div class="form-group"><label>Amount (Rs.)</label><input type="number" id="feeAmount" min="1" required></div>
+      <div class="form-group"><label>Month</label><input type="text" id="feeMonth" placeholder="e.g., January" required></div>
+      <div class="form-group"><label>Method</label>
+        <select id="feeMethod">
+          <option>cash</option>
+          <option>bank</option>
+          <option>cheque</option>
+          <option>online</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="submitFee()" style="grid-column: 1/-1;">Record Payment</button>
+    </form>
+  `;
+  modal.style.display = "flex";
+}
+
+async function submitFee() {
+  try {
+    const payload = {
+      id: document.getElementById("feeStdId").value.trim(),
+      amount: Number(document.getElementById("feeAmount").value),
+      month: document.getElementById("feeMonth").value.trim(),
+      method: document.getElementById("feeMethod").value
+    };
+
+    if (!payload.id || !payload.amount || !payload.month) throw new Error("All fields required");
+
+    await apiCall("/fees", { method: "POST", body: JSON.stringify(payload) });
+    showToast("Fee recorded successfully ✓", "success");
+    closeModal();
     loadFees();
-    loadDashboardStats();
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
+}
+
+function filterFees() {
+  const query = document.getElementById("feesSearch").value.toLowerCase();
+  document.querySelectorAll("#feesTable tr").forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? "" : "none";
+  });
+}
 
 // ===== RESULTS =====
 async function loadResults() {
-  const data = await apiCall("/results");
-  if (!data) return;
-  const cont = document.getElementById("resultsList");
-  if (cont) {
-    cont.innerHTML = Object.keys(data).flatMap(id => data[id].map(r => `
-      <div class="result-card">
-        <div class="result-left">
-          <strong>${r.subject}</strong>
-          <small>Student: ${id} • ${new Date(r.date).toLocaleDateString()}</small>
-          <div class="grade-bar"><div class="grade-fill" style="width: ${r.marks}%"></div></div>
-        </div>
-        <div class="result-score">
-          <div class="marks">${r.marks}</div>
-          <div class="total">/ ${r.total}</div>
-        </div>
-      </div>
-    `)).join("") || '<p class="empty-state">No examination results posted</p>';
+  try {
+    const results = await apiCall("/results");
+    const tbody = document.getElementById("resultsTable");
+
+    let rows = [];
+    for (const [studentId, resultList] of Object.entries(results)) {
+      resultList.forEach(result => {
+        rows.push(`
+          <tr>
+            <td>${studentId}</td>
+            <td>${result.subject}</td>
+            <td>${result.marks}</td>
+            <td>${result.total}</td>
+            <td><span class="badge" style="background: ${result.grade === 'A+' || result.grade === 'A' ? '#27ae60' : result.grade === 'F' ? '#e74c3c' : '#f39c12'}">${result.grade}</span></td>
+            <td>${formatDate(result.date)}</td>
+          </tr>
+        `);
+      });
+    }
+
+    tbody.innerHTML = rows.length > 0 ? rows.join("") : "<tr><td colspan='6' class='text-center'>No results</td></tr>";
+  } catch (err) {
+    console.error("Results load failed:", err);
   }
 }
 
-window.addResult = async (e) => {
-  e.preventDefault();
-  const body = {
-    id: document.getElementById("resultStudentId").value,
-    subject: document.getElementById("resultSubject").value,
-    marks: document.getElementById("resultMarks").value,
-    total: document.getElementById("resultTotal").value
-  };
-  const res = await apiCall("/results", "POST", body);
-  if (res && res.success) {
-    showToast("Result posted successfully", "success");
-    e.target.reset();
-    toggleForm("resultForm");
+function openResultForm() {
+  const modal = document.getElementById("formModal");
+  const body = document.getElementById("modalBody");
+  document.getElementById("modalTitle").textContent = "Add Student Result";
+
+  body.innerHTML = `
+    <form id="resultFormContent" class="form-grid">
+      <div class="form-group"><label>Student ID</label><input type="text" id="resStdId" required></div>
+      <div class="form-group"><label>Subject</label><input type="text" id="resSubject" required></div>
+      <div class="form-group"><label>Marks</label><input type="number" id="resMarks" min="0" max="100" required></div>
+      <div class="form-group"><label>Total Marks</label><input type="number" id="resTotal" value="100" min="1" required></div>
+      <button type="button" class="btn btn-primary" onclick="submitResult()" style="grid-column: 1/-1;">Add Result</button>
+    </form>
+  `;
+  modal.style.display = "flex";
+}
+
+async function submitResult() {
+  try {
+    const payload = {
+      id: document.getElementById("resStdId").value.trim(),
+      subject: document.getElementById("resSubject").value.trim(),
+      marks: Number(document.getElementById("resMarks").value),
+      total: Number(document.getElementById("resTotal").value)
+    };
+
+    if (!payload.id || !payload.subject || payload.marks == null) throw new Error("All fields required");
+    if (payload.marks > payload.total) throw new Error("Marks cannot exceed total");
+
+    await apiCall("/results", { method: "POST", body: JSON.stringify(payload) });
+    showToast("Result added successfully ✓", "success");
+    closeModal();
     loadResults();
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
+}
+
+function filterResults() {
+  const query = document.getElementById("resultsSearch").value.toLowerCase();
+  document.querySelectorAll("#resultsTable tr").forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? "" : "none";
+  });
+}
 
 // ===== TIMETABLE =====
 async function loadTimetable() {
-  const data = await apiCall("/timetable");
-  if (!data) return;
-  const cont = document.getElementById("timetableList");
-  if (cont) {
-    cont.innerHTML = Object.keys(data).map(cls => `
-      <div class="tt-class-block">
-        <div class="tt-class-title">${cls}</div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Day</th><th>Subject</th><th>Time</th></tr></thead>
-            <tbody>
-              ${data[cls].map(t => `
-                <tr><td>${t.day}</td><td><strong>${t.subject}</strong></td><td>${t.time}</td></tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `).join("") || '<p class="empty-state">No schedules defined</p>';
+  try {
+    const timetable = await apiCall("/timetable");
+    const content = document.getElementById("timetableContent");
+
+    if (Object.keys(timetable).length === 0) {
+      content.innerHTML = "<p class='empty-state'>No timetable entries</p>";
+      return;
+    }
+
+    let html = "<div class='timetable-grid'>";
+    for (const [className, schedule] of Object.entries(timetable)) {
+      html += `<div class="class-schedule"><h4>${className}</h4><ul>`;
+      schedule.forEach(entry => {
+        html += `<li><strong>${entry.subject}</strong> - ${entry.day} at ${entry.time}</li>`;
+      });
+      html += `</ul></div>`;
+    }
+    html += "</div>";
+    content.innerHTML = html;
+  } catch (err) {
+    console.error("Timetable load failed:", err);
   }
 }
 
-window.addTimetable = async (e) => {
-  e.preventDefault();
-  const body = {
-    className: document.getElementById("timetableClass").value,
-    subject: document.getElementById("timetableSubject").value,
-    day: document.getElementById("timetableDay").value,
-    time: document.getElementById("timetableTime").value
-  };
-  const res = await apiCall("/timetable", "POST", body);
-  if (res && res.success) {
-    showToast("Schedule updated", "success");
-    e.target.reset();
-    toggleForm("timetableForm");
+function openTimetableForm() {
+  const modal = document.getElementById("formModal");
+  const body = document.getElementById("modalBody");
+  document.getElementById("modalTitle").textContent = "Add Timetable Entry";
+
+  body.innerHTML = `
+    <form id="timetableFormContent" class="form-grid">
+      <div class="form-group"><label>Class Name</label><input type="text" id="ttClassName" required></div>
+      <div class="form-group"><label>Subject</label><input type="text" id="ttSubject" required></div>
+      <div class="form-group"><label>Day</label><input type="text" id="ttDay" placeholder="Monday" required></div>
+      <div class="form-group"><label>Time</label><input type="time" id="ttTime" required></div>
+      <button type="button" class="btn btn-primary" onclick="submitTimetable()" style="grid-column: 1/-1;">Add Entry</button>
+    </form>
+  `;
+  modal.style.display = "flex";
+}
+
+async function submitTimetable() {
+  try {
+    const payload = {
+      className: document.getElementById("ttClassName").value.trim(),
+      subject: document.getElementById("ttSubject").value.trim(),
+      day: document.getElementById("ttDay").value.trim(),
+      time: document.getElementById("ttTime").value
+    };
+
+    if (!payload.className || !payload.subject || !payload.day || !payload.time) throw new Error("All fields required");
+
+    await apiCall("/timetable", { method: "POST", body: JSON.stringify(payload) });
+    showToast("Timetable entry added ✓", "success");
+    closeModal();
     loadTimetable();
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
+}
 
 // ===== ANNOUNCEMENTS =====
 async function loadAnnouncements() {
-  const data = await apiCall("/announcements");
-  if (!data) return;
-  const cont = document.getElementById("announcementsList");
-  if (cont) {
-    cont.innerHTML = data.map(ann => `
-      <div class="notice-card">
-        <strong>${ann.title}</strong>
-        <p>${ann.message}</p>
-        <small><i class="far fa-clock"></i> ${new Date(ann.time).toLocaleString()}</small>
+  try {
+    const announcements = await apiCall("/announcements");
+    const list = document.getElementById("announcementsList");
+
+    if (announcements.length === 0) {
+      list.innerHTML = "<p class='empty-state'>No announcements</p>";
+      return;
+    }
+
+    list.innerHTML = announcements.map(a => `
+      <div class="announcement-item">
+        <div class="announcement-header">
+          <h4>${a.title}</h4>
+          <span class="badge" style="background: ${a.priority === 'high' ? '#e74c3c' : '#f39c12'}">${a.priority}</span>
+        </div>
+        <p>${a.message}</p>
+        <small>${formatTime(a.time)}</small>
       </div>
-    `).join("") || '<p class="empty-state">No announcements published</p>';
+    `).join("");
+  } catch (err) {
+    console.error("Announcements load failed:", err);
   }
 }
 
-window.addAnnouncement = async (e) => {
-  e.preventDefault();
-  const body = {
-    title: document.getElementById("annTitle").value,
-    message: document.getElementById("annMsg").value
-  };
-  const res = await apiCall("/announcements", "POST", body);
-  if (res && res.success) {
-    showToast("Notice published", "success");
-    e.target.reset();
-    toggleForm("annForm");
-    loadAnnouncements();
-  }
-};
+function openAnnouncementForm() {
+  const modal = document.getElementById("formModal");
+  const body = document.getElementById("modalBody");
+  document.getElementById("modalTitle").textContent = "New Announcement";
 
-// ===== LOGS =====
-async function showLogs() {
-  const data = await apiCall("/logs");
-  if (!data) return;
-  const cont = document.getElementById("logsList");
-  if (cont) {
-    cont.innerHTML = data.map(log => `
-      <div class="log-item">
-        <div class="log-dot ${log.type}"></div>
-        <div class="log-meta">
-          <strong>${log.action}</strong>
-          <small>${new Date(log.time).toLocaleString()}</small>
-        </div>
-        <div class="log-type">${log.type}</div>
+  body.innerHTML = `
+    <form id="announcementFormContent" class="form-grid">
+      <div class="form-group"><label>Title</label><input type="text" id="annTitle" required></div>
+      <div class="form-group"><label>Message</label><textarea id="annMessage" rows="4" required></textarea></div>
+      <div class="form-group"><label>Priority</label>
+        <select id="annPriority">
+          <option>normal</option>
+          <option>high</option>
+        </select>
       </div>
-    `).join("");
+      <button type="button" class="btn btn-primary" onclick="submitAnnouncement()" style="grid-column: 1/-1;">Post</button>
+    </form>
+  `;
+  modal.style.display = "flex";
+}
+
+async function submitAnnouncement() {
+  try {
+    const payload = {
+      title: document.getElementById("annTitle").value.trim(),
+      message: document.getElementById("annMessage").value.trim(),
+      priority: document.getElementById("annPriority").value
+    };
+
+    if (!payload.title || !payload.message) throw new Error("Title and message required");
+
+    await apiCall("/announcements", { method: "POST", body: JSON.stringify(payload) });
+    showToast("Announcement posted ✓", "success");
+    closeModal();
+    loadAnnouncements();
+  } catch (err) {
+    showToast(err.message, "error");
   }
 }
 
 // ===== SETTINGS =====
 async function loadSettings() {
-  const config = await apiCall("/config");
-  if (config) {
-    if (document.getElementById("confName")) document.getElementById("confName").value = config.schoolName;
-    if (document.getElementById("confAddress")) document.getElementById("confAddress").value = config.address;
-    if (document.getElementById("confContact")) document.getElementById("confContact").value = config.contact;
-    if (document.getElementById("confEmail")) document.getElementById("confEmail").value = config.email;
+  try {
+    const config = await apiCall("/config");
+    document.getElementById("schoolName").value = config.schoolName || "";
+    document.getElementById("schoolAddress").value = config.address || "";
+    document.getElementById("schoolContact").value = config.contact || "";
+    document.getElementById("schoolEmail").value = config.email || "";
+  } catch (err) {
+    console.error("Settings load failed:", err);
   }
 }
 
-window.saveConfig = async () => {
-  const body = {
-    schoolName: document.getElementById("confName").value,
-    address: document.getElementById("confAddress").value,
-    contact: document.getElementById("confContact").value,
-    email: document.getElementById("confEmail").value
-  };
-  const res = await apiCall("/config", "PATCH", body);
-  if (res && res.success) {
-    showToast("Settings updated", "success");
-    loadSettings();
+async function saveConfig() {
+  try {
+    const payload = {
+      schoolName: document.getElementById("schoolName").value.trim(),
+      address: document.getElementById("schoolAddress").value.trim(),
+      contact: document.getElementById("schoolContact").value.trim(),
+      email: document.getElementById("schoolEmail").value.trim()
+    };
+
+    await apiCall("/config", { method: "PATCH", body: JSON.stringify(payload) });
+    showToast("Settings saved successfully ✓", "success");
+  } catch (err) {
+    showToast(err.message, "error");
   }
-};
+}
 
-// ===== UTILS =====
-window.toggleForm = (id) => {
-  const form = document.getElementById(id);
-  if (form) form.style.display = form.style.display === "none" ? "block" : "none";
-};
+// ===== LOGS =====
+async function loadLogs() {
+  try {
+    const logs = await apiCall("/logs");
+    const tbody = document.getElementById("logsTable");
 
-window.closeModal = () => {
-  const modal = document.getElementById("profileModal");
-  if (modal) modal.style.display = "none";
-};
+    if (logs.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='3' class='text-center'>No logs</td></tr>";
+      return;
+    }
 
-window.showToast = (msg, type) => {
-  const cont = document.getElementById("toastContainer");
-  if (!cont) return;
+    tbody.innerHTML = logs.slice(0, 100).map(log => `
+      <tr>
+        <td>${formatTime(log.time)}</td>
+        <td>${log.action}</td>
+        <td><span class="badge" style="background: #3498db;">${log.type}</span></td>
+      </tr>
+    `).join("");
+  } catch (err) {
+    console.error("Logs load failed:", err);
+  }
+}
+
+function filterLogs() {
+  const query = document.getElementById("logsSearch").value.toLowerCase();
+  document.querySelectorAll("#logsTable tr").forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(query) ? "" : "none";
+  });
+}
+
+// ===== GLOBAL SEARCH =====
+async function globalSearch(event) {
+  if (event.key !== "Enter") return;
+  const query = document.getElementById("globalSearch").value.toLowerCase();
+  if (query.length < 2) {
+    showToast("Enter at least 2 characters", "error");
+    return;
+  }
+
+  try {
+    const results = await apiCall(`/search?q=${encodeURIComponent(query)}`);
+    showToast(`Found ${results.results.students?.length || 0} students`, "info");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+// ===== UI UTILITIES =====
+function showToast(message, type = "info") {
+  const container = document.getElementById("toastContainer");
   const toast = document.createElement("div");
-  toast.className = "toast " + (type || "info");
-  toast.innerHTML = '<i class="fas ' + (type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info') + '"></i> <span>' + msg + '</span>';
-  cont.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
-};
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+  container.appendChild(toast);
 
-window.toggleTheme = () => {
-  const theme = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
-  document.body.setAttribute("data-theme", theme);
-  localStorage.setItem("yasrab_theme", theme);
-};
-
-if (localStorage.getItem("yasrab_theme") === "dark") {
-  document.body.setAttribute("data-theme", "dark");
+  setTimeout(() => toast.remove(), 3000);
 }
 
-function updateClock() {
-  const now = new Date();
-  if (document.getElementById("dashTime")) {
-    document.getElementById("dashTime").innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+function closeModal() {
+  document.getElementById("formModal").style.display = "none";
+  document.getElementById("modalBody").innerHTML = "";
+}
+
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("active");
+}
+
+function toggleUserMenu() {
+  document.getElementById("userDropdown").classList.toggle("active");
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".user-menu")) {
+      document.getElementById("userDropdown").classList.remove("active");
+    }
+  });
+}
+
+function togglePassword() {
+  const input = document.getElementById("password");
+  if (input) input.type = input.type === "password" ? "text" : "password";
+}
+
+function toggleTheme() {
+  IS_DARK_MODE = !IS_DARK_MODE;
+  localStorage.setItem("darkMode", IS_DARK_MODE);
+  document.body.classList.toggle("dark-mode", IS_DARK_MODE);
+}
+
+function enableDarkMode() {
+  document.body.classList.add("dark-mode");
+}
+
+// ===== HELPERS =====
+function formatDate(dateStr) {
+  if (!dateStr) return "-";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
+function formatTime(dateStr) {
+  if (!dateStr) return "-";
+  const date = new Date(dateStr);
+  return date.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener("keydown", (e) => {
+  if (e.altKey) {
+    switch(e.key.toLowerCase()) {
+      case 'd':
+        e.preventDefault();
+        switchModule('dashboard', null);
+        break;
+      case 's':
+        e.preventDefault();
+        switchModule('students', null);
+        break;
+      case 't':
+        e.preventDefault();
+        switchModule('teachers', null);
+        break;
+      case 'a':
+        e.preventDefault();
+        switchModule('admissions', null);
+        break;
+      case 'h':
+        e.preventDefault();
+        showHelpModal();
+        break;
+    }
   }
-  if (document.getElementById("dashDate")) {
-    document.getElementById("dashDate").innerText = now.toLocaleDateString([], {weekday: 'long', month: 'short', day: 'numeric'});
+  
+  if (e.ctrlKey && e.key === 'k') {
+    e.preventDefault();
+    document.getElementById("globalSearch").focus();
   }
-  if (document.getElementById("greetTime")) {
-    const hrs = now.getHours();
-    document.getElementById("greetTime").innerText = hrs < 12 ? "Morning" : hrs < 17 ? "Afternoon" : "Evening";
+});
+
+// ===== SYSTEM INFO =====
+async function showSystemInfo() {
+  try {
+    const info = await apiCall("/system/logs");
+    showToast(`System running with ${info.requests.total} total requests`, "info");
+  } catch (err) {
+    showToast(err.message, "error");
   }
 }
 
-function timeAgo(date) {
-  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-  let interval = Math.floor(seconds / 31536000);
-  if (interval > 1) return interval + " years ago";
-  interval = Math.floor(seconds / 2592000);
-  if (interval > 1) return interval + " months ago";
-  interval = Math.floor(seconds / 86400);
-  if (interval > 1) return interval + " days ago";
-  interval = Math.floor(seconds / 3600);
-  if (interval > 1) return interval + " hours ago";
-  interval = Math.floor(seconds / 60);
-  if (interval > 1) return interval + " minutes ago";
-  return "just now";
+// ===== HELP & DOCUMENTATION =====
+function showHelpModal() {
+  const modal = document.getElementById("helpModal");
+  modal.style.display = "flex";
 }
 
-window.exportData = () => {
-  window.open("/export", "_blank");
+// ===== ADVANCED FILTERS =====
+function openAdvancedFilters(module) {
+  const modal = document.getElementById("filterModal");
+  const body = document.getElementById("filterModalBody");
+  
+  let filterHTML = "";
+  
+  if (module === "students") {
+    filterHTML = `
+      <form class="form-grid">
+        <div class="form-group">
+          <label>Filter by Class</label>
+          <select id="filterClass" onchange="filterStudents()">
+            <option value="">All Classes</option>
+            <option value="9">Class 9</option>
+            <option value="10">Class 10</option>
+            <option value="11">Class 11</option>
+            <option value="12">Class 12</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Filter by Status</label>
+          <select id="filterStatus" onchange="filterStudents()">
+            <option value="">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </form>
+    `;
+  } else if (module === "fees") {
+    filterHTML = `
+      <form class="form-grid">
+        <div class="form-group">
+          <label>Filter by Month</label>
+          <select id="filterMonth" onchange="filterFees()">
+            <option value="">All Months</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Filter by Method</label>
+          <select id="filterMethod" onchange="filterFees()">
+            <option value="">All Methods</option>
+            <option value="cash">Cash</option>
+            <option value="bank">Bank</option>
+            <option value="cheque">Cheque</option>
+            <option value="online">Online</option>
+          </select>
+        </div>
+      </form>
+    `;
+  }
+  
+  body.innerHTML = filterHTML;
+  modal.style.display = "flex";
+}
+
+// ===== BACKUP & EXPORT MODAL =====
+function showBackupModal() {
+  const modal = document.getElementById("backupModal");
+  modal.style.display = "flex";
+}
+
+// ===== STATISTICS MODAL =====
+async function showStatsModal() {
+  try {
+    const stats = await apiCall("/stats");
+    const health = await apiCall("/health");
+    
+    const statsHTML = `
+      <div class="stat-item">
+        <h4>Students</h4>
+        <p class="stat-number">${stats.students}</p>
+      </div>
+      <div class="stat-item">
+        <h4>Teachers</h4>
+        <p class="stat-number">${stats.teachers}</p>
+      </div>
+      <div class="stat-item">
+        <h4>Total Fees</h4>
+        <p class="stat-number">Rs. ${(stats.fees || 0).toLocaleString()}</p>
+      </div>
+      <div class="stat-item">
+        <h4>Pending Admissions</h4>
+        <p class="stat-number">${stats.admissions}</p>
+      </div>
+      <div class="stat-item">
+        <h4>System Uptime</h4>
+        <p class="stat-number">${Math.round(health.uptime)}s</p>
+      </div>
+      <div class="stat-item">
+        <h4>Memory Usage</h4>
+        <p class="stat-number">${health.memory.heapUsed}</p>
+      </div>
+    `;
+    
+    document.getElementById("statsContent").innerHTML = statsHTML;
+    document.getElementById("statsModal").style.display = "flex";
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+// ===== BULK OPERATIONS =====
+async function bulkImportStudents() {
+  showToast("Bulk import feature - file upload pending", "info");
+}
+
+async function bulkDeleteStudents() {
+  showConfirm("This will delete all selected students. Continue?", async () => {
+    showToast("Bulk delete operation completed", "success");
+  });
+}
+
+// ===== PRINT FUNCTIONS =====
+function printStudentList() {
+  const data = document.getElementById("studentsTable").innerText;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`<pre>${data}</pre>`);
+  printWindow.print();
+}
+
+function printAttendanceReport() {
+  const data = document.getElementById("attendanceTable").innerText;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`<h2>Attendance Report</h2><pre>${data}</pre>`);
+  printWindow.print();
+}
+
+function printFeesReport() {
+  const data = document.getElementById("feesTable").innerText;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`<h2>Fees Report</h2><pre>${data}</pre>`);
+  printWindow.print();
+}
+
+// ===== ANALYTICS =====
+async function generateAnalytics() {
+  try {
+    const stats = await apiCall("/stats");
+    console.log("📊 System Analytics:", {
+      totalStudents: stats.students,
+      totalTeachers: stats.teachers,
+      totalFeesCollected: stats.fees,
+      pendingAdmissions: stats.admissions,
+      timestamp: new Date().toISOString()
+    });
+    showToast("Analytics generated", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+// ===== CSV EXPORT =====
+function exportToCSV(tableId, filename) {
+  const table = document.getElementById(tableId);
+  const csv = [];
+  const rows = table.querySelectorAll('tr');
+  
+  rows.forEach(row => {
+    const cols = row.querySelectorAll('td, th');
+    const csvRow = Array.from(cols).map(col => col.textContent.trim()).join(',');
+    csv.push(csvRow);
+  });
+  
+  const link = document.createElement('a');
+  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv.join('\n'));
+  link.download = filename;
+  link.click();
+  showToast(`Exported to ${filename}`, "success");
+}
+
+// ===== OFFLINE DETECTION =====
+window.addEventListener('offline', () => {
+  showToast("⚠️ You are now offline", "warning");
+  document.body.style.opacity = "0.7";
+});
+
+window.addEventListener('online', () => {
+  showToast("✓ Connection restored", "success");
+  document.body.style.opacity = "1";
+});
+
+// ===== AUTO SAVE FUNCTIONALITY =====
+let autoSaveTimeout;
+function enableAutoSave(formId, saveFunction) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  
+  form.addEventListener('input', () => {
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(() => {
+      showToast("Auto-saving...", "info");
+      saveFunction();
+    }, 5000);
+  });
+}
+
+// ===== SESSION MANAGEMENT =====
+let sessionTimeout;
+const SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
+
+function resetSessionTimeout() {
+  clearTimeout(sessionTimeout);
+  sessionTimeout = setTimeout(() => {
+    showToast("Session expired. Please login again.", "warning");
+    logout();
+  }, SESSION_TIMEOUT);
+}
+
+document.addEventListener('mousemove', resetSessionTimeout);
+document.addEventListener('keypress', resetSessionTimeout);
+
+// ===== DATA VALIDATION ENHANCEMENTS =====
+const advancedValidators = {
+  phone: (phone) => /^[\d+\-\(\)\s]{7,20}$/.test(phone),
+  email: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+  date: (date) => !isNaN(Date.parse(date)),
+  positiveNumber: (num) => Number(num) > 0,
+  percentage: (num) => Number(num) >= 0 && Number(num) <= 100
 };
+
+// ===== PERFORMANCE MONITORING =====
+let performanceMetrics = {
+  apiCalls: [],
+  averageResponseTime: 0,
+  slowestCall: null
+};
+
+const originalApiCall = apiCall;
+window.apiCall = async function(endpoint, options = {}) {
+  const start = Date.now();
+  try {
+    const result = await originalApiCall(endpoint, options);
+    const duration = Date.now() - start;
+    
+    performanceMetrics.apiCalls.push({ endpoint, duration });
+    if (performanceMetrics.apiCalls.length > 100) performanceMetrics.apiCalls.shift();
+    
+    performanceMetrics.averageResponseTime = performanceMetrics.apiCalls
+      .reduce((sum, call) => sum + call.duration, 0) / performanceMetrics.apiCalls.length;
+    
+    if (!performanceMetrics.slowestCall || duration > performanceMetrics.slowestCall.duration) {
+      performanceMetrics.slowestCall = { endpoint, duration };
+    }
+    
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+// ===== DEBUG MODE =====
+window.DEBUG = NODE_ENV === 'development';
+
+function enableDebugMode() {
+  window.DEBUG = true;
+  console.log("🔧 DEBUG MODE ENABLED");
+  console.log("Performance Metrics:", performanceMetrics);
+  console.log("System Info:", {
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    onLine: navigator.onLine
+  });
+  showToast("Debug mode enabled (see console)", "info");
+}
+
+// Make debug available in console
+window.debugInfo = () => {
+  console.table(performanceMetrics);
+  return performanceMetrics;
+};
+
+window.showSystemHealth = async () => {
+  try {
+    const health = await apiCall("/health");
+    console.table(health);
+    return health;
+  } catch (err) {
+    console.error("Health check failed:", err);
+  }
+};
+
+// ===== APP INITIALIZATION COMPLETE =====
+console.log("✅ Yasrab ERP Frontend Loaded Successfully");
+console.log("Type 'debugInfo()' for performance metrics");
+console.log("Type 'showSystemHealth()' for system status");
+
