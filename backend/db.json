@@ -23,7 +23,20 @@
       "subject": "English"
     }
   ],
-  "attendance": {},
+  "attendance": {
+    "2026-05-22": [
+      {
+        "id": "S002",
+        "status": "present",
+        "time": "2026-05-22T04:46:06.454Z"
+      },
+      {
+        "id": "S003",
+        "status": "present",
+        "time": "2026-05-22T04:46:06.468Z"
+      }
+    ]
+  },
   "fees": {
     "S001": [
       {
@@ -69,10 +82,36 @@
       {
         "subject": "English",
         "time": "Tuesday 2:00 PM"
+      },
+      {
+        "subject": "biology",
+        "day": "Monday",
+        "time": "09:46"
       }
     ]
   },
   "logs": [
+    {
+      "id": 1779425211664,
+      "action": "📅 Timetable updated: 10A — Monday biology",
+      "type": "SYSTEM",
+      "userId": "system",
+      "time": "2026-05-22T04:46:51.664Z"
+    },
+    {
+      "id": 1779425155385,
+      "action": "Delete teacher: T-1779425145759",
+      "type": "STAFF",
+      "userId": "system",
+      "time": "2026-05-22T04:45:55.385Z"
+    },
+    {
+      "id": 1779425145762,
+      "action": "👨‍🏫 Faculty registered: Mozam ALi",
+      "type": "STAFF",
+      "userId": "system",
+      "time": "2026-05-22T04:45:45.762Z"
+    },
     {
       "id": 1779424397600,
       "action": "✅ Admin login successful: admin",
