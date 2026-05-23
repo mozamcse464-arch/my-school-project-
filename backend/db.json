@@ -7,10 +7,21 @@
       "enrolledDate": "2026-05-21T06:33:12.137Z"
     },
     {
+      "id": "S-552252",
+      "name": "Mozam Ali",
+      "class": "12",
+      "phone": "+923433591864",
+      "address": "mailir cant",
+      "enrolledDate": "2026-05-22T10:59:12.252Z"
+    },
+    {
       "id": "S003",
-      "name": "Fatima Ahmed",
-      "class": "10A",
-      "enrolledDate": "2026-05-21T06:33:12.137Z"
+      "name": "abdul basit",
+      "class": "10",
+      "phone": "03433591864",
+      "address": "mailir cant",
+      "status": "active",
+      "enrolledDate": "2026-05-22T11:09:54.221Z"
     }
   ],
   "teachers": [
@@ -28,12 +39,12 @@
       {
         "id": "S002",
         "status": "present",
-        "time": "2026-05-22T04:46:06.454Z"
+        "time": "2026-05-22T10:49:46.792Z"
       },
       {
         "id": "S003",
         "status": "present",
-        "time": "2026-05-22T04:46:06.468Z"
+        "time": "2026-05-22T10:49:46.804Z"
       }
     ]
   },
@@ -53,6 +64,15 @@
         "method": "cash",
         "date": "2026-05-21T06:33:12.137Z"
       }
+    ],
+    "S003": [
+      {
+        "amount": 1500,
+        "month": "April",
+        "method": "bank",
+        "date": "2026-05-22T11:19:17.619Z",
+        "receipt": "RCP-1779448757619"
+      }
     ]
   },
   "results": {
@@ -71,6 +91,16 @@
         "total": 100,
         "date": "2026-05-21T06:33:12.137Z"
       }
+    ],
+    "S004": [
+      {
+        "subject": "Biology",
+        "marks": 50,
+        "total": 100,
+        "percentage": 50,
+        "grade": "F",
+        "date": "2026-05-22T11:14:41.489Z"
+      }
     ]
   },
   "timetable": {
@@ -87,10 +117,88 @@
         "subject": "biology",
         "day": "Monday",
         "time": "09:46"
+      },
+      {
+        "subject": "math",
+        "day": "Tuesday",
+        "time": "06:17"
+      },
+      {
+        "subject": "biology",
+        "day": "Tuesday",
+        "time": "04:17"
+      },
+      {
+        "subject": "Mathametics",
+        "day": "Monday",
+        "time": "10:00"
       }
     ]
   },
   "logs": [
+    {
+      "id": 1779448757622,
+      "action": "💰 Fee payment: PKR 1500 from S003",
+      "type": "FINANCE",
+      "userId": "system",
+      "time": "2026-05-22T11:19:17.622Z"
+    },
+    {
+      "id": 1779448481495,
+      "action": "📊 Result posted: S004 - Biology",
+      "type": "ACADEMIC",
+      "userId": "system",
+      "time": "2026-05-22T11:14:41.495Z"
+    },
+    {
+      "id": 1779448194224,
+      "action": "📚 Student enrolled: abdul basit",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-22T11:09:54.224Z"
+    },
+    {
+      "id": 1779448149200,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-22T11:09:09.200Z"
+    },
+    {
+      "id": 1779447831342,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-22T11:03:51.342Z"
+    },
+    {
+      "id": 1779447534280,
+      "action": "📝 Admission application: Mozam Ali",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-22T10:58:54.280Z"
+    },
+    {
+      "id": 1779447386978,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-22T10:56:26.978Z"
+    },
+    {
+      "id": 1779447275142,
+      "action": "🗑️ Student record deleted: S003",
+      "type": "SECURITY",
+      "userId": "system",
+      "time": "2026-05-22T10:54:35.142Z"
+    },
+    {
+      "id": 1779446646853,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-22T10:44:06.853Z"
+    },
     {
       "id": 1779425211664,
       "action": "📅 Timetable updated: 10A — Monday biology",
@@ -161,5 +269,15 @@
     "email": "admin@yasrab.edu"
   },
   "announcements": [],
-  "admissions": []
+  "admissions": [
+    {
+      "id": "ADM-1779447534273",
+      "name": "Mozam Ali",
+      "class": "12",
+      "phone": "+923433591864",
+      "address": "mailir cant",
+      "status": "approved",
+      "date": "2026-05-22T10:58:54.273Z"
+    }
+  ]
 }

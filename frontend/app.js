@@ -6,28 +6,37 @@ let IS_DARK_MODE = localStorage.getItem("darkMode") === "true";
 const API_BASE = window.location.origin;
 
 // ===== INITIALIZATION =====
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(() => {
-    if (AUTH_TOKEN) {
-      showApp();
-      loadDashboard();
-    } else {
-      showLogin();
-    }
-  }, 1000);
-
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) loginForm.addEventListener("submit", handleLogin);
-
+document.addEventListener("DOMContentLoaded", async () => {
+  // Check theme
   if (IS_DARK_MODE) enableDarkMode();
 
   const todayInput = document.getElementById("attendanceDate");
   if (todayInput) todayInput.valueAsDate = new Date();
+
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) loginForm.addEventListener("submit", handleLogin);
+
+  // Initial routing
+  if (AUTH_TOKEN) {
+    try {
+      await loadDashboard();
+      showApp();
+    } catch (err) {
+      console.error("Failed to load initial data:", err);
+      showLogin();
+    }
+  } else {
+    // Small delay for branding effect
+    setTimeout(showLogin, 800);
+  }
 });
 
 // ===== AUTHENTICATION =====
 async function handleLogin(e) {
   e.preventDefault();
+  const loginBtn = e.target.querySelector(".btn-login");
+  const originalContent = loginBtn.innerHTML;
+  
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
@@ -37,6 +46,9 @@ async function handleLogin(e) {
   }
 
   try {
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+    loginBtn.disabled = true;
+
     const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -50,40 +62,61 @@ async function handleLogin(e) {
 
     AUTH_TOKEN = data.token;
     localStorage.setItem("token", AUTH_TOKEN);
-    showToast("Login successful ✓", "success");
+    showToast("Welcome back! Login successful ✓", "success");
 
-    setTimeout(() => {
-      document.getElementById("username").value = "";
-      document.getElementById("password").value = "";
-      showApp();
-      loadDashboard();
-    }, 500);
+    // Clean up and load app
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+    
+    await loadDashboard();
+    showApp();
   } catch (err) {
     showToast(err.message || "Login error", "error");
     console.error("Login error:", err);
+  } finally {
+    loginBtn.innerHTML = originalContent;
+    loginBtn.disabled = false;
   }
 }
 
 function logout() {
-  if (confirm("Are you sure you want to logout?")) {
+  showConfirm("Are you sure you want to logout? your session will be ended.", () => {
     AUTH_TOKEN = null;
     localStorage.removeItem("token");
     showLogin();
     showToast("Logged out successfully", "info");
-  }
+  });
 }
 
 // ===== UI NAVIGATION =====
 function showLogin() {
-  document.getElementById("loadingScreen").style.display = "none";
-  document.getElementById("loginPage").style.display = "flex";
-  document.getElementById("mainApp").style.display = "none";
+  const loader = document.getElementById("loadingScreen");
+  if (loader) {
+    loader.style.opacity = "0";
+    setTimeout(() => {
+      loader.style.display = "none";
+      document.getElementById("loginPage").style.display = "flex";
+      document.getElementById("mainApp").style.display = "none";
+    }, 300);
+  } else {
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("mainApp").style.display = "none";
+  }
 }
 
 function showApp() {
-  document.getElementById("loadingScreen").style.display = "none";
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("mainApp").style.display = "flex";
+  const loader = document.getElementById("loadingScreen");
+  if (loader) {
+    loader.style.opacity = "0";
+    setTimeout(() => {
+      loader.style.display = "none";
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("mainApp").style.display = "flex";
+    }, 300);
+  } else {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("mainApp").style.display = "flex";
+  }
 }
 
 function switchModule(module, event) {
@@ -93,7 +126,10 @@ function switchModule(module, event) {
   document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
 
   const moduleEl = document.getElementById(`module-${module}`);
-  if (moduleEl) moduleEl.style.display = "block";
+  if (moduleEl) {
+    moduleEl.style.display = "block";
+    moduleEl.classList.add("active");
+  }
 
   const navBtn = document.querySelector(`[data-module="${module}"]`);
   if (navBtn) navBtn.classList.add("active");
@@ -116,6 +152,11 @@ function switchModule(module, event) {
   };
 
   if (loaders[module]) loaders[module]();
+  
+  // Close sidebar on mobile after selection
+  if (window.innerWidth <= 768) {
+    document.getElementById("sidebar").classList.remove("active");
+  }
 }
 
 function updateBreadcrumb(module) {
@@ -133,7 +174,14 @@ function updateBreadcrumb(module) {
     logs: "Audit Logs"
   };
   const breadcrumb = document.getElementById("breadcrumb");
-  if (breadcrumb) breadcrumb.textContent = breadcrumbMap[module] || module;
+  if (breadcrumb) {
+    breadcrumb.innerHTML = `
+      <i class="fas fa-home" style="margin-right: 8px; opacity: 0.5;"></i>
+      <span>Yasrab ERP</span>
+      <i class="fas fa-chevron-right" style="margin: 0 10px; font-size: 0.8rem; opacity: 0.3;"></i>
+      <span style="font-weight: 700; color: var(--primary);">${breadcrumbMap[module] || module}</span>
+    `;
+  }
 }
 
 // ===== API CALLS WITH ERROR HANDLING =====
@@ -187,7 +235,12 @@ async function loadDashboard() {
     const logs = stats.recentLogs || [];
 
     if (logs.length === 0) {
-      activityList.innerHTML = "<p class='empty-state'>No recent activity</p>";
+      activityList.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-clock-rotate-left"></i>
+          <p>No recent activity found</p>
+        </div>
+      `;
     } else {
       activityList.innerHTML = logs.map(log => `
         <div class="activity-item">
@@ -209,7 +262,7 @@ async function loadDashboard() {
 }
 
 function refreshDashboard() {
-  showToast("Refreshing dashboard...", "info");
+  showToast("Refreshing data...", "info");
   loadDashboard();
 }
 
@@ -220,22 +273,22 @@ async function loadAdmissions() {
     const tbody = document.getElementById("admissionsTable");
 
     if (admissions.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='7' class='text-center'>No applications</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='7' class='text-center'><div class='empty-state'><i class='fas fa-folder-open'></i><p>No admission applications</p></div></td></tr>";
       return;
     }
 
     tbody.innerHTML = admissions.map(adm => `
       <tr>
-        <td>${adm.id}</td>
-        <td>${adm.name}</td>
-        <td>${adm.class}</td>
-        <td>${adm.phone}</td>
-        <td>${formatDate(adm.date)}</td>
-        <td><span class="badge" style="background: ${adm.status === 'pending' ? '#f39c12' : '#27ae60'}">${adm.status}</span></td>
-        <td>
+        <td data-label="ID">${adm.id}</td>
+        <td data-label="Name">${adm.name}</td>
+        <td data-label="Class">${adm.class}</td>
+        <td data-label="Phone">${adm.phone}</td>
+        <td data-label="Date">${formatDate(adm.date)}</td>
+        <td data-label="Status"><span class="badge" style="background: ${adm.status === 'pending' ? '#f39c12' : '#27ae60'}">${adm.status}</span></td>
+        <td data-label="Actions">
           ${adm.status === 'pending' ? `
-            <button class="btn-small" onclick="approveAdmission('${adm.id}')"><i class="fas fa-check"></i></button>
-            <button class="btn-small reject" onclick="rejectAdmission('${adm.id}')"><i class="fas fa-times"></i></button>
+            <button class="btn-small" onclick="approveAdmission('${adm.id}')" title="Approve"><i class="fas fa-check"></i></button>
+            <button class="btn-small reject" onclick="rejectAdmission('${adm.id}')" title="Reject"><i class="fas fa-times"></i></button>
           ` : '-'}
         </td>
       </tr>
@@ -252,11 +305,14 @@ function openAdmissionForm() {
 
   body.innerHTML = `
     <form id="admissionFormContent" class="form-grid">
-      <div class="form-group"><label>Name</label><input type="text" id="admName" required></div>
-      <div class="form-group"><label>Class</label><input type="text" id="admClass" required></div>
-      <div class="form-group"><label>Phone</label><input type="tel" id="admPhone"></div>
-      <div class="form-group"><label>Address</label><input type="text" id="admAddress"></div>
-      <button type="button" class="btn btn-primary" onclick="submitAdmission()" style="grid-column: 1/-1;">Submit</button>
+      <div class="form-group"><label>Full Name</label><input type="text" id="admName" placeholder="Enter student's name" required></div>
+      <div class="form-group"><label>Target Class</label><input type="text" id="admClass" placeholder="e.g. 10th" required></div>
+      <div class="form-group"><label>Guardian Phone</label><input type="tel" id="admPhone" placeholder="+92 ..."></div>
+      <div class="form-group"><label>Residential Address</label><input type="text" id="admAddress" placeholder="Full address"></div>
+      <div style="grid-column: 1/-1; display: flex; gap: 10px; margin-top: 10px;">
+        <button type="button" class="btn btn-primary" onclick="submitAdmission()" style="flex: 1;">Submit Application</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
     </form>
   `;
   modal.style.display = "flex";
@@ -271,7 +327,7 @@ async function submitAdmission() {
       address: document.getElementById("admAddress").value.trim()
     };
 
-    if (!payload.name || !payload.class) throw new Error("Name and class required");
+    if (!payload.name || !payload.class) throw new Error("Name and class are required");
 
     await apiCall("/admissions", { method: "POST", body: JSON.stringify(payload) });
     showToast("Application submitted successfully ✓", "success");
@@ -283,25 +339,27 @@ async function submitAdmission() {
 }
 
 async function approveAdmission(id) {
-  if (!confirm("Approve this application?")) return;
-  try {
-    await apiCall(`/admissions/${id}`, { method: "PATCH", body: JSON.stringify({ status: "approved" }) });
-    showToast("Application approved ✓", "success");
-    loadAdmissions();
-  } catch (err) {
-    showToast(err.message, "error");
-  }
+  showConfirm("Approve this admission application? This will create a student record.", async () => {
+    try {
+      await apiCall(`/admissions/${id}`, { method: "PATCH", body: JSON.stringify({ status: "approved" }) });
+      showToast("Application approved ✓", "success");
+      loadAdmissions();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  });
 }
 
 async function rejectAdmission(id) {
-  if (!confirm("Reject this application?")) return;
-  try {
-    await apiCall(`/admissions/${id}`, { method: "PATCH", body: JSON.stringify({ status: "rejected" }) });
-    showToast("Application rejected", "info");
-    loadAdmissions();
-  } catch (err) {
-    showToast(err.message, "error");
-  }
+  showConfirm("Are you sure you want to reject this application?", async () => {
+    try {
+      await apiCall(`/admissions/${id}`, { method: "PATCH", body: JSON.stringify({ status: "rejected" }) });
+      showToast("Application rejected", "info");
+      loadAdmissions();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  });
 }
 
 function filterAdmissions() {
@@ -319,21 +377,21 @@ async function loadStudents() {
     const tbody = document.getElementById("studentsTable");
 
     if (students.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='7' class='text-center'>No students</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='7' class='text-center'><div class='empty-state'><i class='fas fa-user-slash'></i><p>No student records found</p></div></td></tr>";
       return;
     }
 
     tbody.innerHTML = students.map(s => `
       <tr>
-        <td><strong>${s.id}</strong></td>
-        <td>${s.name}</td>
-        <td>${s.class}</td>
-        <td>${s.phone}</td>
-        <td>${formatDate(s.enrolledDate)}</td>
-        <td><span class="badge" style="background: #27ae60;">${s.status || 'active'}</span></td>
-        <td>
-          <button class="btn-small" onclick="editStudent('${s.id}')"><i class="fas fa-edit"></i></button>
-          <button class="btn-small reject" onclick="deleteStudent('${s.id}')"><i class="fas fa-trash"></i></button>
+        <td data-label="ID"><strong>${s.id}</strong></td>
+        <td data-label="Name">${s.name}</td>
+        <td data-label="Class">${s.class}</td>
+        <td data-label="Phone">${s.phone || '-'}</td>
+        <td data-label="Enrolled">${formatDate(s.enrolledDate)}</td>
+        <td data-label="Status"><span class="badge" style="background: #27ae60;">${s.status || 'active'}</span></td>
+        <td data-label="Actions">
+          <button class="btn-small" onclick="editStudent('${s.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="btn-small reject" onclick="deleteStudent('${s.id}')" title="Delete"><i class="fas fa-trash"></i></button>
         </td>
       </tr>
     `).join("");
@@ -347,16 +405,19 @@ async function loadStudents() {
 function openStudentForm() {
   const modal = document.getElementById("formModal");
   const body = document.getElementById("modalBody");
-  document.getElementById("modalTitle").textContent = "Add New Student";
+  document.getElementById("modalTitle").textContent = "Register New Student";
 
   body.innerHTML = `
     <form id="studentFormContent" class="form-grid">
-      <div class="form-group"><label>Student ID</label><input type="text" id="stdId" required></div>
-      <div class="form-group"><label>Name</label><input type="text" id="stdName" required></div>
+      <div class="form-group"><label>Student ID</label><input type="text" id="stdId" placeholder="e.g. S-101" required></div>
+      <div class="form-group"><label>Full Name</label><input type="text" id="stdName" required></div>
       <div class="form-group"><label>Class</label><input type="text" id="stdClass" required></div>
       <div class="form-group"><label>Phone</label><input type="tel" id="stdPhone"></div>
-      <div class="form-group"><label>Address</label><input type="text" id="stdAddress"></div>
-      <button type="button" class="btn btn-primary" onclick="submitStudent()" style="grid-column: 1/-1;">Add Student</button>
+      <div class="form-group" style="grid-column: 1/-1;"><label>Address</label><input type="text" id="stdAddress"></div>
+      <div style="grid-column: 1/-1; display: flex; gap: 10px; margin-top: 10px;">
+        <button type="button" class="btn btn-primary" onclick="submitStudent()" style="flex: 1;">Add Student</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
     </form>
   `;
   modal.style.display = "flex";
@@ -372,10 +433,35 @@ async function submitStudent() {
       address: document.getElementById("stdAddress").value.trim()
     };
 
-    if (!payload.id || !payload.name || !payload.class) throw new Error("ID, name, and class required");
+    if (!payload.id || !payload.name || !payload.class) {
+      throw new Error("Student ID, name, and class are required");
+    }
+
+    if (!/^[A-Za-z0-9\-]{1,20}$/.test(payload.id)) {
+      throw new Error("Student ID must be 1-20 alphanumeric characters");
+    }
+
+    if (!/^[A-Za-z\s]{2,100}$/.test(payload.name)) {
+      throw new Error("Name must contain 2-100 letters only");
+    }
+
+    if (payload.phone && !/^[\d+\-\(\)\s]{7,20}$/.test(payload.phone)) {
+      throw new Error("Invalid phone number format");
+    }
+
+    const students = await apiCall("/students");
+    const existingById = students.find(s => s.id === payload.id);
+    if (existingById) {
+      throw new Error(`Student ID "${payload.id}" already exists`);
+    }
+
+    const existingByName = students.find(s => s.name.toLowerCase() === payload.name.toLowerCase());
+    if (existingByName) {
+      throw new Error(`Student "${payload.name}" already enrolled (ID: ${existingByName.id})`);
+    }
 
     await apiCall("/students", { method: "POST", body: JSON.stringify(payload) });
-    showToast("Student added successfully ✓", "success");
+    showToast("Student registered successfully ✓", "success");
     closeModal();
     loadStudents();
   } catch (err) {
@@ -384,18 +470,19 @@ async function submitStudent() {
 }
 
 async function deleteStudent(id) {
-  if (!confirm("Delete this student?")) return;
-  try {
-    await apiCall(`/students/${id}`, { method: "DELETE" });
-    showToast("Student deleted", "info");
-    loadStudents();
-  } catch (err) {
-    showToast(err.message, "error");
-  }
+  showConfirm(`Are you sure you want to delete student ${id}? This action cannot be undone.`, async () => {
+    try {
+      await apiCall(`/students/${id}`, { method: "DELETE" });
+      showToast("Student record deleted", "info");
+      loadStudents();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  });
 }
 
 function editStudent(id) {
-  showToast("Edit feature coming soon", "info");
+  showToast("Quick Edit feature is under development", "info");
 }
 
 function filterStudents() {
@@ -413,17 +500,17 @@ async function loadTeachers() {
     const tbody = document.getElementById("teachersTable");
 
     if (teachers.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='4' class='text-center'>No teachers</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='4' class='text-center'><div class='empty-state'><i class='fas fa-chalkboard-user'></i><p>No faculty members registered</p></div></td></tr>";
       return;
     }
 
     tbody.innerHTML = teachers.map(t => `
       <tr>
-        <td>${t.id}</td>
-        <td>${t.name}</td>
-        <td>${t.subject}</td>
-        <td>
-          <button class="btn-small reject" onclick="deleteTeacher('${t.id}')"><i class="fas fa-trash"></i></button>
+        <td data-label="ID">${t.id}</td>
+        <td data-label="Name">${t.name}</td>
+        <td data-label="Subject">${t.subject}</td>
+        <td data-label="Actions">
+          <button class="btn-small reject" onclick="deleteTeacher('${t.id}')" title="Delete"><i class="fas fa-trash"></i></button>
         </td>
       </tr>
     `).join("");
@@ -437,13 +524,16 @@ async function loadTeachers() {
 function openTeacherForm() {
   const modal = document.getElementById("formModal");
   const body = document.getElementById("modalBody");
-  document.getElementById("modalTitle").textContent = "Add New Teacher";
+  document.getElementById("modalTitle").textContent = "Add New Faculty";
 
   body.innerHTML = `
     <form id="teacherFormContent" class="form-grid">
-      <div class="form-group"><label>Name</label><input type="text" id="tchName" required></div>
-      <div class="form-group"><label>Subject</label><input type="text" id="tchSubject" required></div>
-      <button type="button" class="btn btn-primary" onclick="submitTeacher()" style="grid-column: 1/-1;">Add Teacher</button>
+      <div class="form-group"><label>Full Name</label><input type="text" id="tchName" required></div>
+      <div class="form-group"><label>Department/Subject</label><input type="text" id="tchSubject" required></div>
+      <div style="grid-column: 1/-1; display: flex; gap: 10px; margin-top: 10px;">
+        <button type="button" class="btn btn-primary" onclick="submitTeacher()" style="flex: 1;">Add Teacher</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
     </form>
   `;
   modal.style.display = "flex";
@@ -456,7 +546,17 @@ async function submitTeacher() {
       subject: document.getElementById("tchSubject").value.trim()
     };
 
-    if (!payload.name || !payload.subject) throw new Error("Name and subject required");
+    if (!payload.name || !payload.subject) throw new Error("Name and subject are required");
+
+    if (!/^[A-Za-z\s]{2,100}$/.test(payload.name)) {
+      throw new Error("Name must contain 2-100 letters only");
+    }
+
+    const teachers = await apiCall("/teachers");
+    const existingTeacher = teachers.find(t => t.name.toLowerCase() === payload.name.toLowerCase());
+    if (existingTeacher) {
+      throw new Error(`Teacher "${payload.name}" is already registered (ID: ${existingTeacher.id})`);
+    }
 
     await apiCall("/teachers", { method: "POST", body: JSON.stringify(payload) });
     showToast("Teacher added successfully ✓", "success");
@@ -468,14 +568,15 @@ async function submitTeacher() {
 }
 
 async function deleteTeacher(id) {
-  if (!confirm("Delete this teacher?")) return;
-  try {
-    await apiCall(`/teachers/${id}`, { method: "DELETE" });
-    showToast("Teacher deleted", "info");
-    loadTeachers();
-  } catch (err) {
-    showToast(err.message, "error");
-  }
+  showConfirm("Remove this faculty member from the system?", async () => {
+    try {
+      await apiCall(`/teachers/${id}`, { method: "DELETE" });
+      showToast("Teacher record removed", "info");
+      loadTeachers();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  });
 }
 
 function filterTeachers() {
@@ -503,20 +604,29 @@ async function loadAttendanceForDate() {
     const attendanceData = await apiCall(`/attendance/${date}`);
 
     const tbody = document.getElementById("attendanceTable");
+    
+    if (students.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='4' class='text-center'><div class='empty-state'><i class='fas fa-users-slash'></i><p>Add students first to mark attendance</p></div></td></tr>";
+      return;
+    }
+
     tbody.innerHTML = students.map(s => {
       const att = attendanceData.find(a => a.id === s.id) || {};
+      const status = att.status || 'present';
       return `
         <tr>
-          <td>${s.id}</td>
-          <td>${s.name}</td>
-          <td>
-            <select id="att-${s.id}" value="${att.status || 'present'}">
-              <option value="present">Present</option>
-              <option value="absent">Absent</option>
-              <option value="leave">Leave</option>
-            </select>
+          <td data-label="ID">${s.id}</td>
+          <td data-label="Name">${s.name}</td>
+          <td data-label="Status">
+            <div class="custom-select-wrapper">
+              <select id="att-${s.id}" class="att-select ${status}">
+                <option value="present" ${status === 'present' ? 'selected' : ''}>Present</option>
+                <option value="absent" ${status === 'absent' ? 'selected' : ''}>Absent</option>
+                <option value="leave" ${status === 'leave' ? 'selected' : ''}>Leave</option>
+              </select>
+            </div>
           </td>
-          <td>-</td>
+          <td data-label="Last Marked">${att.time ? formatTime(att.time) : 'Never'}</td>
         </tr>
       `;
     }).join("");
@@ -526,7 +636,13 @@ async function loadAttendanceForDate() {
 }
 
 async function saveAttendance() {
+  const saveBtn = document.querySelector("#module-attendance .btn-primary");
+  const originalHtml = saveBtn.innerHTML;
+  
   try {
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    saveBtn.disabled = true;
+
     const date = document.getElementById("attendanceDate").value;
     const students = await apiCall("/students");
 
@@ -538,9 +654,13 @@ async function saveAttendance() {
       });
     }
 
-    showToast("Attendance saved successfully ✓", "success");
+    showToast(`Attendance saved successfully for ${date} ✓`, "success");
+    loadAttendanceForDate();
   } catch (err) {
     showToast(err.message, "error");
+  } finally {
+    saveBtn.innerHTML = originalHtml;
+    saveBtn.disabled = false;
   }
 }
 
@@ -555,18 +675,18 @@ async function loadFees() {
       feeList.forEach(fee => {
         rows.push(`
           <tr>
-            <td>${studentId}</td>
-            <td>Rs. ${fee.amount.toLocaleString()}</td>
-            <td>${fee.month}</td>
-            <td>${fee.method}</td>
-            <td>${fee.receipt || 'N/A'}</td>
-            <td>${formatDate(fee.date)}</td>
+            <td data-label="Student ID">${studentId}</td>
+            <td data-label="Amount" class="state-success">Rs. ${fee.amount.toLocaleString()}</td>
+            <td data-label="Month">${fee.month}</td>
+            <td data-label="Method"><span class="label">${fee.method}</span></td>
+            <td data-label="Receipt"><code>${fee.receipt || 'N/A'}</code></td>
+            <td data-label="Date">${formatDate(fee.date)}</td>
           </tr>
         `);
       });
     }
 
-    tbody.innerHTML = rows.length > 0 ? rows.join("") : "<tr><td colspan='6' class='text-center'>No fee records</td></tr>";
+    tbody.innerHTML = rows.length > 0 ? rows.join("") : "<tr><td colspan='6' class='text-center'><div class='empty-state'><i class='fas fa-money-bill-transfer'></i><p>No fee records found</p></div></td></tr>";
   } catch (err) {
     console.error("Fees load failed:", err);
   }
@@ -579,18 +699,25 @@ function openFeeForm() {
 
   body.innerHTML = `
     <form id="feeFormContent" class="form-grid">
-      <div class="form-group"><label>Student ID</label><input type="text" id="feeStdId" required></div>
-      <div class="form-group"><label>Amount (Rs.)</label><input type="number" id="feeAmount" min="1" required></div>
-      <div class="form-group"><label>Month</label><input type="text" id="feeMonth" placeholder="e.g., January" required></div>
-      <div class="form-group"><label>Method</label>
-        <select id="feeMethod">
-          <option>cash</option>
-          <option>bank</option>
-          <option>cheque</option>
-          <option>online</option>
+      <div class="form-group"><label>Student ID</label><input type="text" id="feeStdId" placeholder="e.g. S-101" required></div>
+      <div class="form-group"><label>Amount (PKR)</label><input type="number" id="feeAmount" min="1" placeholder="5000" required></div>
+      <div class="form-group"><label>Month</label>
+        <select id="feeMonth">
+          ${["January","February","March","April","May","June","July","August","September","October","November","December"].map(m => `<option value="${m}">${m}</option>`).join("")}
         </select>
       </div>
-      <button type="button" class="btn btn-primary" onclick="submitFee()" style="grid-column: 1/-1;">Record Payment</button>
+      <div class="form-group"><label>Payment Method</label>
+        <select id="feeMethod">
+          <option value="cash">Cash</option>
+          <option value="bank">Bank Transfer</option>
+          <option value="cheque">Cheque</option>
+          <option value="online">Online Payment</option>
+        </select>
+      </div>
+      <div style="grid-column: 1/-1; display: flex; gap: 10px; margin-top: 10px;">
+        <button type="button" class="btn btn-primary" onclick="submitFee()" style="flex: 1;">Confirm Payment</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
     </form>
   `;
   modal.style.display = "flex";
@@ -605,10 +732,28 @@ async function submitFee() {
       method: document.getElementById("feeMethod").value
     };
 
-    if (!payload.id || !payload.amount || !payload.month) throw new Error("All fields required");
+    if (!payload.id || !payload.amount || !payload.month) {
+      throw new Error("Please fill all required fields");
+    }
+
+    if (payload.amount <= 0 || payload.amount >= 10000000) {
+      throw new Error("Amount must be between 1 and 10000000");
+    }
+
+    const students = await apiCall("/students");
+    const student = students.find(s => s.id === payload.id);
+    if (!student) {
+      throw new Error(`Student ID "${payload.id}" does not exist. Please check and try again.`);
+    }
+
+    const fees = await apiCall("/fees");
+    const existingFee = fees[payload.id]?.find(f => f.month === payload.month);
+    if (existingFee) {
+      throw new Error(`Fee for ${payload.month} already recorded for ${payload.id}. Cannot add duplicate payment.`);
+    }
 
     await apiCall("/fees", { method: "POST", body: JSON.stringify(payload) });
-    showToast("Fee recorded successfully ✓", "success");
+    showToast("Fee payment recorded successfully ✓", "success");
     closeModal();
     loadFees();
   } catch (err) {
@@ -633,20 +778,21 @@ async function loadResults() {
     let rows = [];
     for (const [studentId, resultList] of Object.entries(results)) {
       resultList.forEach(result => {
+        const gradeClass = result.grade === 'A+' || result.grade === 'A' ? 'state-success' : result.grade === 'F' ? 'state-error' : 'state-warning';
         rows.push(`
           <tr>
-            <td>${studentId}</td>
-            <td>${result.subject}</td>
-            <td>${result.marks}</td>
-            <td>${result.total}</td>
-            <td><span class="badge" style="background: ${result.grade === 'A+' || result.grade === 'A' ? '#27ae60' : result.grade === 'F' ? '#e74c3c' : '#f39c12'}">${result.grade}</span></td>
-            <td>${formatDate(result.date)}</td>
+            <td data-label="Student ID">${studentId}</td>
+            <td data-label="Subject">${result.subject}</td>
+            <td data-label="Marks">${result.marks} / ${result.total}</td>
+            <td data-label="Percentage">${result.percentage}%</td>
+            <td data-label="Grade"><span class="badge ${gradeClass}">${result.grade}</span></td>
+            <td data-label="Date">${formatDate(result.date)}</td>
           </tr>
         `);
       });
     }
 
-    tbody.innerHTML = rows.length > 0 ? rows.join("") : "<tr><td colspan='6' class='text-center'>No results</td></tr>";
+    tbody.innerHTML = rows.length > 0 ? rows.join("") : "<tr><td colspan='6' class='text-center'><div class='empty-state'><i class='fas fa-graduation-cap'></i><p>No results published yet</p></div></td></tr>";
   } catch (err) {
     console.error("Results load failed:", err);
   }
@@ -655,15 +801,18 @@ async function loadResults() {
 function openResultForm() {
   const modal = document.getElementById("formModal");
   const body = document.getElementById("modalBody");
-  document.getElementById("modalTitle").textContent = "Add Student Result";
+  document.getElementById("modalTitle").textContent = "Publish Academic Result";
 
   body.innerHTML = `
     <form id="resultFormContent" class="form-grid">
-      <div class="form-group"><label>Student ID</label><input type="text" id="resStdId" required></div>
-      <div class="form-group"><label>Subject</label><input type="text" id="resSubject" required></div>
-      <div class="form-group"><label>Marks</label><input type="number" id="resMarks" min="0" max="100" required></div>
+      <div class="form-group"><label>Student ID</label><input type="text" id="resStdId" placeholder="e.g. S-101" required></div>
+      <div class="form-group"><label>Subject</label><input type="text" id="resSubject" placeholder="Mathematics" required></div>
+      <div class="form-group"><label>Obtained Marks</label><input type="number" id="resMarks" min="0" required></div>
       <div class="form-group"><label>Total Marks</label><input type="number" id="resTotal" value="100" min="1" required></div>
-      <button type="button" class="btn btn-primary" onclick="submitResult()" style="grid-column: 1/-1;">Add Result</button>
+      <div style="grid-column: 1/-1; display: flex; gap: 10px; margin-top: 10px;">
+        <button type="button" class="btn btn-primary" onclick="submitResult()" style="flex: 1;">Publish Result</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
     </form>
   `;
   modal.style.display = "flex";
@@ -678,11 +827,20 @@ async function submitResult() {
       total: Number(document.getElementById("resTotal").value)
     };
 
-    if (!payload.id || !payload.subject || payload.marks == null) throw new Error("All fields required");
-    if (payload.marks > payload.total) throw new Error("Marks cannot exceed total");
+    if (!payload.id || !payload.subject || payload.marks === "") throw new Error("All fields are required");
+    if (payload.marks > payload.total) throw new Error("Obtained marks cannot be greater than total marks");
+
+    if (payload.marks < 0 || payload.marks > 100) throw new Error("Marks must be between 0 and 100");
+    if (payload.total <= 0) throw new Error("Total marks must be greater than 0");
+
+    const students = await apiCall("/students");
+    const student = students.find(s => s.id === payload.id);
+    if (!student) {
+      throw new Error(`Student "${payload.id}" does not exist. Please check and try again.`);
+    }
 
     await apiCall("/results", { method: "POST", body: JSON.stringify(payload) });
-    showToast("Result added successfully ✓", "success");
+    showToast("Result published successfully ✓", "success");
     closeModal();
     loadResults();
   } catch (err) {
@@ -705,15 +863,24 @@ async function loadTimetable() {
     const content = document.getElementById("timetableContent");
 
     if (Object.keys(timetable).length === 0) {
-      content.innerHTML = "<p class='empty-state'>No timetable entries</p>";
+      content.innerHTML = "<div class='empty-state'><i class='fas fa-calendar-xmark'></i><p>No class schedules defined</p></div>";
       return;
     }
 
     let html = "<div class='timetable-grid'>";
     for (const [className, schedule] of Object.entries(timetable)) {
-      html += `<div class="class-schedule"><h4>${className}</h4><ul>`;
+      html += `
+        <div class="class-schedule">
+          <div class="schedule-header">
+            <h4><i class="fas fa-chalkboard"></i> ${className}</h4>
+          </div>
+          <ul>`;
       schedule.forEach(entry => {
-        html += `<li><strong>${entry.subject}</strong> - ${entry.day} at ${entry.time}</li>`;
+        html += `
+          <li>
+            <div class="schedule-time"><i class="far fa-clock"></i> ${entry.day || 'N/A'} at ${entry.time}</div>
+            <div class="schedule-subject">${entry.subject}</div>
+          </li>`;
       });
       html += `</ul></div>`;
     }
@@ -731,11 +898,18 @@ function openTimetableForm() {
 
   body.innerHTML = `
     <form id="timetableFormContent" class="form-grid">
-      <div class="form-group"><label>Class Name</label><input type="text" id="ttClassName" required></div>
-      <div class="form-group"><label>Subject</label><input type="text" id="ttSubject" required></div>
-      <div class="form-group"><label>Day</label><input type="text" id="ttDay" placeholder="Monday" required></div>
-      <div class="form-group"><label>Time</label><input type="time" id="ttTime" required></div>
-      <button type="button" class="btn btn-primary" onclick="submitTimetable()" style="grid-column: 1/-1;">Add Entry</button>
+      <div class="form-group"><label>Class Name</label><input type="text" id="ttClassName" placeholder="e.g. 10th-A" required></div>
+      <div class="form-group"><label>Subject</label><input type="text" id="ttSubject" placeholder="Physics" required></div>
+      <div class="form-group"><label>Day of Week</label>
+        <select id="ttDay">
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Start Time</label><input type="time" id="ttTime" required></div>
+      <div style="grid-column: 1/-1; display: flex; gap: 10px; margin-top: 10px;">
+        <button type="button" class="btn btn-primary" onclick="submitTimetable()" style="flex: 1;">Add to Schedule</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
     </form>
   `;
   modal.style.display = "flex";
@@ -750,10 +924,10 @@ async function submitTimetable() {
       time: document.getElementById("ttTime").value
     };
 
-    if (!payload.className || !payload.subject || !payload.day || !payload.time) throw new Error("All fields required");
+    if (!payload.className || !payload.subject || !payload.day || !payload.time) throw new Error("All fields are required");
 
     await apiCall("/timetable", { method: "POST", body: JSON.stringify(payload) });
-    showToast("Timetable entry added ✓", "success");
+    showToast("Schedule updated successfully ✓", "success");
     closeModal();
     loadTimetable();
   } catch (err) {
@@ -768,18 +942,21 @@ async function loadAnnouncements() {
     const list = document.getElementById("announcementsList");
 
     if (announcements.length === 0) {
-      list.innerHTML = "<p class='empty-state'>No announcements</p>";
+      list.innerHTML = "<div class='empty-state'><i class='fas fa-bullhorn'></i><p>No recent announcements</p></div>";
       return;
     }
 
     list.innerHTML = announcements.map(a => `
-      <div class="announcement-item">
+      <div class="announcement-item ${a.priority === 'high' ? 'priority-high' : ''}">
         <div class="announcement-header">
           <h4>${a.title}</h4>
-          <span class="badge" style="background: ${a.priority === 'high' ? '#e74c3c' : '#f39c12'}">${a.priority}</span>
+          <span class="badge ${a.priority === 'high' ? 'state-error' : 'state-warning'}">${a.priority}</span>
         </div>
         <p>${a.message}</p>
-        <small>${formatTime(a.time)}</small>
+        <div class="announcement-footer">
+          <span><i class="far fa-clock"></i> ${formatTime(a.time)}</span>
+          <span><i class="far fa-user"></i> Admin</span>
+        </div>
       </div>
     `).join("");
   } catch (err) {
@@ -790,19 +967,22 @@ async function loadAnnouncements() {
 function openAnnouncementForm() {
   const modal = document.getElementById("formModal");
   const body = document.getElementById("modalBody");
-  document.getElementById("modalTitle").textContent = "New Announcement";
+  document.getElementById("modalTitle").textContent = "New System Announcement";
 
   body.innerHTML = `
     <form id="announcementFormContent" class="form-grid">
-      <div class="form-group"><label>Title</label><input type="text" id="annTitle" required></div>
-      <div class="form-group"><label>Message</label><textarea id="annMessage" rows="4" required></textarea></div>
-      <div class="form-group"><label>Priority</label>
+      <div class="form-group" style="grid-column: 1/-1;"><label>Title</label><input type="text" id="annTitle" placeholder="Announcement Heading" required></div>
+      <div class="form-group" style="grid-column: 1/-1;"><label>Detailed Message</label><textarea id="annMessage" rows="4" placeholder="Type your message here..." required></textarea></div>
+      <div class="form-group"><label>Priority Level</label>
         <select id="annPriority">
-          <option>normal</option>
-          <option>high</option>
+          <option value="normal">Normal</option>
+          <option value="high">Urgent/High</option>
         </select>
       </div>
-      <button type="button" class="btn btn-primary" onclick="submitAnnouncement()" style="grid-column: 1/-1;">Post</button>
+      <div style="grid-column: 1/-1; display: flex; gap: 10px; margin-top: 10px;">
+        <button type="button" class="btn btn-primary" onclick="submitAnnouncement()" style="flex: 1;">Broadcast Message</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
     </form>
   `;
   modal.style.display = "flex";
@@ -816,10 +996,10 @@ async function submitAnnouncement() {
       priority: document.getElementById("annPriority").value
     };
 
-    if (!payload.title || !payload.message) throw new Error("Title and message required");
+    if (!payload.title || !payload.message) throw new Error("Title and message are required");
 
     await apiCall("/announcements", { method: "POST", body: JSON.stringify(payload) });
-    showToast("Announcement posted ✓", "success");
+    showToast("Announcement published ✓", "success");
     closeModal();
     loadAnnouncements();
   } catch (err) {
@@ -841,7 +1021,9 @@ async function loadSettings() {
 }
 
 async function saveConfig() {
+  const saveBtn = document.querySelector("#module-settings .btn-primary");
   try {
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     const payload = {
       schoolName: document.getElementById("schoolName").value.trim(),
       address: document.getElementById("schoolAddress").value.trim(),
@@ -850,9 +1032,11 @@ async function saveConfig() {
     };
 
     await apiCall("/config", { method: "PATCH", body: JSON.stringify(payload) });
-    showToast("Settings saved successfully ✓", "success");
+    showToast("System settings updated successfully ✓", "success");
   } catch (err) {
     showToast(err.message, "error");
+  } finally {
+    saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
   }
 }
 
@@ -863,15 +1047,15 @@ async function loadLogs() {
     const tbody = document.getElementById("logsTable");
 
     if (logs.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='3' class='text-center'>No logs</td></tr>";
+      tbody.innerHTML = "<tr><td colspan='3' class='text-center'><div class='empty-state'><i class='fas fa-receipt'></i><p>No activity logs found</p></div></td></tr>";
       return;
     }
 
     tbody.innerHTML = logs.slice(0, 100).map(log => `
       <tr>
-        <td>${formatTime(log.time)}</td>
-        <td>${log.action}</td>
-        <td><span class="badge" style="background: #3498db;">${log.type}</span></td>
+        <td data-label="Time">${formatTime(log.time)}</td>
+        <td data-label="Action">${log.action}</td>
+        <td data-label="Type"><span class="badge" style="background: var(--primary);">${log.type}</span></td>
       </tr>
     `).join("");
   } catch (err) {
@@ -892,13 +1076,20 @@ async function globalSearch(event) {
   if (event.key !== "Enter") return;
   const query = document.getElementById("globalSearch").value.toLowerCase();
   if (query.length < 2) {
-    showToast("Enter at least 2 characters", "error");
+    showToast("Please enter at least 2 characters", "info");
     return;
   }
 
   try {
     const results = await apiCall(`/search?q=${encodeURIComponent(query)}`);
-    showToast(`Found ${results.results.students?.length || 0} students`, "info");
+    const totalFound = (results.results.students?.length || 0) + (results.results.teachers?.length || 0);
+    showToast(`Found ${totalFound} relevant records`, "info");
+    
+    if (results.results.students?.length > 0) {
+      switchModule('students', null);
+      document.getElementById("studentsSearch").value = query;
+      filterStudents();
+    }
   } catch (err) {
     showToast(err.message, "error");
   }
@@ -909,15 +1100,33 @@ function showToast(message, type = "info") {
   const container = document.getElementById("toastContainer");
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
-  toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+  
+  const icons = {
+    success: 'check-circle',
+    error: 'circle-exclamation',
+    info: 'info-circle',
+    warning: 'triangle-exclamation'
+  };
+  
+  toast.innerHTML = `<i class="fas fa-${icons[type] || 'bell'}"></i> <span>${message}</span>`;
   container.appendChild(toast);
 
-  setTimeout(() => toast.remove(), 3000);
+  // Auto remove
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(20px)";
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
 }
 
 function closeModal() {
-  document.getElementById("formModal").style.display = "none";
-  document.getElementById("modalBody").innerHTML = "";
+  const modal = document.getElementById("formModal");
+  modal.style.opacity = "0";
+  setTimeout(() => {
+    modal.style.display = "none";
+    modal.style.opacity = "1";
+    document.getElementById("modalBody").innerHTML = "";
+  }, 200);
 }
 
 function toggleSidebar() {
@@ -926,26 +1135,63 @@ function toggleSidebar() {
 
 function toggleUserMenu() {
   document.getElementById("userDropdown").classList.toggle("active");
-  document.addEventListener("click", (e) => {
+  
+  // Close when clicking outside
+  const closeMenu = (e) => {
     if (!e.target.closest(".user-menu")) {
       document.getElementById("userDropdown").classList.remove("active");
+      document.removeEventListener("click", closeMenu);
     }
-  });
+  };
+  setTimeout(() => document.addEventListener("click", closeMenu), 10);
 }
 
 function togglePassword() {
   const input = document.getElementById("password");
-  if (input) input.type = input.type === "password" ? "text" : "password";
+  const icon = document.querySelector(".toggle-password i");
+  if (input) {
+    input.type = input.type === "password" ? "text" : "password";
+    icon.classList.toggle("fa-eye");
+    icon.classList.toggle("fa-eye-slash");
+  }
 }
 
 function toggleTheme() {
   IS_DARK_MODE = !IS_DARK_MODE;
   localStorage.setItem("darkMode", IS_DARK_MODE);
-  document.body.classList.toggle("dark-mode", IS_DARK_MODE);
+  if (IS_DARK_MODE) enableDarkMode();
+  else disableDarkMode();
+  
+  showToast(`${IS_DARK_MODE ? 'Dark' : 'Light'} mode enabled`, "info");
 }
 
 function enableDarkMode() {
   document.body.classList.add("dark-mode");
+}
+
+function disableDarkMode() {
+  document.body.classList.remove("dark-mode");
+}
+
+function showConfirm(message, callback) {
+  const dialog = document.getElementById("confirmDialog");
+  const msgEl = document.getElementById("confirmMessage");
+  const btn = document.getElementById("confirmBtn");
+  
+  msgEl.textContent = message;
+  window.confirmCallback = callback;
+  dialog.style.display = "flex";
+}
+
+function closeConfirm() {
+  document.getElementById("confirmDialog").style.display = "none";
+}
+
+function executeConfirm() {
+  if (window.confirmCallback) {
+    window.confirmCallback();
+  }
+  closeConfirm();
 }
 
 // ===== HELPERS =====
@@ -961,343 +1207,26 @@ function formatTime(dateStr) {
   return date.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-// ===== KEYBOARD SHORTCUTS =====
-document.addEventListener("keydown", (e) => {
-  if (e.altKey) {
-    switch(e.key.toLowerCase()) {
-      case 'd':
-        e.preventDefault();
-        switchModule('dashboard', null);
-        break;
-      case 's':
-        e.preventDefault();
-        switchModule('students', null);
-        break;
-      case 't':
-        e.preventDefault();
-        switchModule('teachers', null);
-        break;
-      case 'a':
-        e.preventDefault();
-        switchModule('admissions', null);
-        break;
-      case 'h':
-        e.preventDefault();
-        showHelpModal();
-        break;
-    }
-  }
-  
-  if (e.ctrlKey && e.key === 'k') {
-    e.preventDefault();
-    document.getElementById("globalSearch").focus();
-  }
-});
-
-// ===== SYSTEM INFO =====
-async function showSystemInfo() {
-  try {
-    const info = await apiCall("/system/logs");
-    showToast(`System running with ${info.requests.total} total requests`, "info");
-  } catch (err) {
-    showToast(err.message, "error");
-  }
+function showNotifications() {
+  showToast("No new notifications", "info");
 }
 
-// ===== HELP & DOCUMENTATION =====
-function showHelpModal() {
-  const modal = document.getElementById("helpModal");
-  modal.style.display = "flex";
-}
-
-// ===== ADVANCED FILTERS =====
-function openAdvancedFilters(module) {
-  const modal = document.getElementById("filterModal");
-  const body = document.getElementById("filterModalBody");
-  
-  let filterHTML = "";
-  
-  if (module === "students") {
-    filterHTML = `
-      <form class="form-grid">
-        <div class="form-group">
-          <label>Filter by Class</label>
-          <select id="filterClass" onchange="filterStudents()">
-            <option value="">All Classes</option>
-            <option value="9">Class 9</option>
-            <option value="10">Class 10</option>
-            <option value="11">Class 11</option>
-            <option value="12">Class 12</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Filter by Status</label>
-          <select id="filterStatus" onchange="filterStudents()">
-            <option value="">All</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-      </form>
-    `;
-  } else if (module === "fees") {
-    filterHTML = `
-      <form class="form-grid">
-        <div class="form-group">
-          <label>Filter by Month</label>
-          <select id="filterMonth" onchange="filterFees()">
-            <option value="">All Months</option>
-            <option value="January">January</option>
-            <option value="February">February</option>
-            <option value="March">March</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Filter by Method</label>
-          <select id="filterMethod" onchange="filterFees()">
-            <option value="">All Methods</option>
-            <option value="cash">Cash</option>
-            <option value="bank">Bank</option>
-            <option value="cheque">Cheque</option>
-            <option value="online">Online</option>
-          </select>
-        </div>
-      </form>
-    `;
-  }
-  
-  body.innerHTML = filterHTML;
-  modal.style.display = "flex";
-}
-
-// ===== BACKUP & EXPORT MODAL =====
 function showBackupModal() {
-  const modal = document.getElementById("backupModal");
+  const modal = document.getElementById("formModal");
+  const body = document.getElementById("modalBody");
+  document.getElementById("modalTitle").textContent = "System Backup & Export";
+
+  body.innerHTML = `
+    <div class="backup-grid">
+      <button class="backup-item" onclick="exportFullBackup()" style="width: 100%; padding: 20px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-main); cursor: pointer;">
+        <i class="fas fa-file-export" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+        <div class="backup-info" style="text-align: left;"><strong>JSON Database</strong><p>Full system dump for developers</p></div>
+      </button>
+    </div>
+  `;
   modal.style.display = "flex";
 }
 
-// ===== STATISTICS MODAL =====
-async function showStatsModal() {
-  try {
-    const stats = await apiCall("/stats");
-    const health = await apiCall("/health");
-    
-    const statsHTML = `
-      <div class="stat-item">
-        <h4>Students</h4>
-        <p class="stat-number">${stats.students}</p>
-      </div>
-      <div class="stat-item">
-        <h4>Teachers</h4>
-        <p class="stat-number">${stats.teachers}</p>
-      </div>
-      <div class="stat-item">
-        <h4>Total Fees</h4>
-        <p class="stat-number">Rs. ${(stats.fees || 0).toLocaleString()}</p>
-      </div>
-      <div class="stat-item">
-        <h4>Pending Admissions</h4>
-        <p class="stat-number">${stats.admissions}</p>
-      </div>
-      <div class="stat-item">
-        <h4>System Uptime</h4>
-        <p class="stat-number">${Math.round(health.uptime)}s</p>
-      </div>
-      <div class="stat-item">
-        <h4>Memory Usage</h4>
-        <p class="stat-number">${health.memory.heapUsed}</p>
-      </div>
-    `;
-    
-    document.getElementById("statsContent").innerHTML = statsHTML;
-    document.getElementById("statsModal").style.display = "flex";
-  } catch (err) {
-    showToast(err.message, "error");
-  }
+function exportFullBackup() {
+  showToast("Export feature coming soon", "info");
 }
-
-// ===== BULK OPERATIONS =====
-async function bulkImportStudents() {
-  showToast("Bulk import feature - file upload pending", "info");
-}
-
-async function bulkDeleteStudents() {
-  showConfirm("This will delete all selected students. Continue?", async () => {
-    showToast("Bulk delete operation completed", "success");
-  });
-}
-
-// ===== PRINT FUNCTIONS =====
-function printStudentList() {
-  const data = document.getElementById("studentsTable").innerText;
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`<pre>${data}</pre>`);
-  printWindow.print();
-}
-
-function printAttendanceReport() {
-  const data = document.getElementById("attendanceTable").innerText;
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`<h2>Attendance Report</h2><pre>${data}</pre>`);
-  printWindow.print();
-}
-
-function printFeesReport() {
-  const data = document.getElementById("feesTable").innerText;
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`<h2>Fees Report</h2><pre>${data}</pre>`);
-  printWindow.print();
-}
-
-// ===== ANALYTICS =====
-async function generateAnalytics() {
-  try {
-    const stats = await apiCall("/stats");
-    console.log("📊 System Analytics:", {
-      totalStudents: stats.students,
-      totalTeachers: stats.teachers,
-      totalFeesCollected: stats.fees,
-      pendingAdmissions: stats.admissions,
-      timestamp: new Date().toISOString()
-    });
-    showToast("Analytics generated", "success");
-  } catch (err) {
-    showToast(err.message, "error");
-  }
-}
-
-// ===== CSV EXPORT =====
-function exportToCSV(tableId, filename) {
-  const table = document.getElementById(tableId);
-  const csv = [];
-  const rows = table.querySelectorAll('tr');
-  
-  rows.forEach(row => {
-    const cols = row.querySelectorAll('td, th');
-    const csvRow = Array.from(cols).map(col => col.textContent.trim()).join(',');
-    csv.push(csvRow);
-  });
-  
-  const link = document.createElement('a');
-  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv.join('\n'));
-  link.download = filename;
-  link.click();
-  showToast(`Exported to ${filename}`, "success");
-}
-
-// ===== OFFLINE DETECTION =====
-window.addEventListener('offline', () => {
-  showToast("⚠️ You are now offline", "warning");
-  document.body.style.opacity = "0.7";
-});
-
-window.addEventListener('online', () => {
-  showToast("✓ Connection restored", "success");
-  document.body.style.opacity = "1";
-});
-
-// ===== AUTO SAVE FUNCTIONALITY =====
-let autoSaveTimeout;
-function enableAutoSave(formId, saveFunction) {
-  const form = document.getElementById(formId);
-  if (!form) return;
-  
-  form.addEventListener('input', () => {
-    clearTimeout(autoSaveTimeout);
-    autoSaveTimeout = setTimeout(() => {
-      showToast("Auto-saving...", "info");
-      saveFunction();
-    }, 5000);
-  });
-}
-
-// ===== SESSION MANAGEMENT =====
-let sessionTimeout;
-const SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours
-
-function resetSessionTimeout() {
-  clearTimeout(sessionTimeout);
-  sessionTimeout = setTimeout(() => {
-    showToast("Session expired. Please login again.", "warning");
-    logout();
-  }, SESSION_TIMEOUT);
-}
-
-document.addEventListener('mousemove', resetSessionTimeout);
-document.addEventListener('keypress', resetSessionTimeout);
-
-// ===== DATA VALIDATION ENHANCEMENTS =====
-const advancedValidators = {
-  phone: (phone) => /^[\d+\-\(\)\s]{7,20}$/.test(phone),
-  email: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-  date: (date) => !isNaN(Date.parse(date)),
-  positiveNumber: (num) => Number(num) > 0,
-  percentage: (num) => Number(num) >= 0 && Number(num) <= 100
-};
-
-// ===== PERFORMANCE MONITORING =====
-let performanceMetrics = {
-  apiCalls: [],
-  averageResponseTime: 0,
-  slowestCall: null
-};
-
-const originalApiCall = apiCall;
-window.apiCall = async function(endpoint, options = {}) {
-  const start = Date.now();
-  try {
-    const result = await originalApiCall(endpoint, options);
-    const duration = Date.now() - start;
-    
-    performanceMetrics.apiCalls.push({ endpoint, duration });
-    if (performanceMetrics.apiCalls.length > 100) performanceMetrics.apiCalls.shift();
-    
-    performanceMetrics.averageResponseTime = performanceMetrics.apiCalls
-      .reduce((sum, call) => sum + call.duration, 0) / performanceMetrics.apiCalls.length;
-    
-    if (!performanceMetrics.slowestCall || duration > performanceMetrics.slowestCall.duration) {
-      performanceMetrics.slowestCall = { endpoint, duration };
-    }
-    
-    return result;
-  } catch (err) {
-    throw err;
-  }
-};
-
-// ===== DEBUG MODE =====
-window.DEBUG = NODE_ENV === 'development';
-
-function enableDebugMode() {
-  window.DEBUG = true;
-  console.log("🔧 DEBUG MODE ENABLED");
-  console.log("Performance Metrics:", performanceMetrics);
-  console.log("System Info:", {
-    userAgent: navigator.userAgent,
-    language: navigator.language,
-    onLine: navigator.onLine
-  });
-  showToast("Debug mode enabled (see console)", "info");
-}
-
-// Make debug available in console
-window.debugInfo = () => {
-  console.table(performanceMetrics);
-  return performanceMetrics;
-};
-
-window.showSystemHealth = async () => {
-  try {
-    const health = await apiCall("/health");
-    console.table(health);
-    return health;
-  } catch (err) {
-    console.error("Health check failed:", err);
-  }
-};
-
-// ===== APP INITIALIZATION COMPLETE =====
-console.log("✅ Yasrab ERP Frontend Loaded Successfully");
-console.log("Type 'debugInfo()' for performance metrics");
-console.log("Type 'showSystemHealth()' for system status");
-

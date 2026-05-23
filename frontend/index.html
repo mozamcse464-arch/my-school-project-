@@ -3,482 +3,485 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yasrab School Management System</title>
+  <title>Yasrab School Management System | Professional ERP</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="loading">
   <div id="toastContainer" class="toast-container"></div>
+  
+  <!-- LOADING SCREEN -->
   <div id="loadingScreen" class="loading-screen">
-    <div class="loader">
-      <div class="loader-spinner"></div>
-      <p>Loading Yasrab ERP...</p>
+    <div class="loader-content">
+      <div class="logo-spinner">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <div class="loader-text">
+        <h1>Yasrab ERP</h1>
+        <p>Initializing Secure Session...</p>
+      </div>
+      <div class="loader-bar"><div class="loader-progress"></div></div>
     </div>
   </div>
 
   <!-- LOGIN PAGE -->
-  <div id="loginPage" class="auth-page">
-    <div class="auth-container">
-      <div class="auth-card">
+  <div id="loginPage" class="auth-page" style="display: none;">
+    <div class="auth-glass-card">
+      <div class="auth-sidebar">
+        <div class="auth-sidebar-content">
+          <i class="fas fa-school-flag"></i>
+          <h2>Yasrab School</h2>
+          <p>Excellence in Education Management</p>
+        </div>
+      </div>
+      <div class="auth-form-container">
         <div class="auth-header">
-          <div class="auth-icon"><i class="fas fa-graduation-cap"></i></div>
-          <h1>Yasrab School</h1>
-          <p>Unified Management System</p>
+          <h1>Welcome Back</h1>
+          <p>Sign in to access your dashboard</p>
         </div>
         <form id="loginForm" class="auth-form">
           <div class="form-group">
-            <label for="username">Admin Username</label>
+            <label>Administrator Username</label>
             <div class="input-wrapper">
-              <i class="fas fa-user"></i>
-              <input type="text" id="username" placeholder="Enter username" required autocomplete="username">
+              <i class="fas fa-envelope"></i>
+              <input type="text" id="username" placeholder="admin" required autocomplete="username">
             </div>
           </div>
           <div class="form-group">
-            <label for="password">Password</label>
+            <label>Password</label>
             <div class="input-wrapper">
-              <i class="fas fa-lock"></i>
-              <input type="password" id="password" placeholder="Enter password" required autocomplete="current-password">
+              <i class="fas fa-shield-halved"></i>
+              <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
               <button type="button" class="toggle-password" onclick="togglePassword()"><i class="fas fa-eye"></i></button>
             </div>
           </div>
-          <button type="submit" class="btn-login"><span>Sign In</span><i class="fas fa-arrow-right"></i></button>
+          <button type="submit" class="btn-login">
+            <span>Sign In to Portal</span>
+            <i class="fas fa-arrow-right-to-bracket"></i>
+          </button>
         </form>
-        <div class="auth-footer"><p>Demo: <code>admin</code> / <code>1234</code></p></div>
+        <div class="auth-footer">
+          <p><i class="fas fa-info-circle"></i> Use <code>admin</code> / <code>1234</code> for demo access</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- MAIN APP -->
+  <!-- MAIN APP CONTAINER -->
   <div id="mainApp" class="app-container" style="display: none;">
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="sidebar">
-      <div class="sidebar-header">
-        <div class="logo"><i class="fas fa-school"></i><span class="logo-text">Yasrab<em>ERP</em></span></div>
-        <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      </div>
-      <nav class="sidebar-nav">
-        <div class="nav-section">
-          <div class="nav-title">Dashboard</div>
-          <button class="nav-item active" data-module="dashboard" onclick="switchModule('dashboard', event)">
-            <i class="fas fa-chart-line"></i><span>Dashboard</span>
-          </button>
+      <div class="sidebar-brand">
+        <div class="logo">
+          <div class="logo-icon"><i class="fas fa-bolt-lightning"></i></div>
+          <span class="logo-text">Yasrab<em>ERP</em></span>
         </div>
-        <div class="nav-section">
-          <div class="nav-title">People</div>
+        <button class="sidebar-close show-on-mobile" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+      </div>
+      
+      <div class="sidebar-user">
+        <div class="user-avatar"><i class="fas fa-user-shield"></i></div>
+        <div class="user-info">
+          <span class="user-name">System Admin</span>
+          <span class="user-role">Super User</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <span class="nav-label">Main Menu</span>
+          <button class="nav-item active" data-module="dashboard" onclick="switchModule('dashboard', event)">
+            <i class="fas fa-chart-pie"></i><span>Dashboard</span>
+          </button>
           <button class="nav-item" data-module="admissions" onclick="switchModule('admissions', event)">
             <i class="fas fa-user-plus"></i><span>Admissions</span><span class="badge" id="admissionsBadge">0</span>
           </button>
+        </div>
+
+        <div class="nav-group">
+          <span class="nav-label">Academic Management</span>
           <button class="nav-item" data-module="students" onclick="switchModule('students', event)">
-            <i class="fas fa-users"></i><span>Students</span><span class="badge" id="studentsBadge">0</span>
+            <i class="fas fa-user-graduate"></i><span>Students</span><span class="badge secondary" id="studentsBadge">0</span>
           </button>
           <button class="nav-item" data-module="teachers" onclick="switchModule('teachers', event)">
-            <i class="fas fa-chalkboard-user"></i><span>Teachers</span><span class="badge" id="teachersBadge">0</span>
+            <i class="fas fa-chalkboard-user"></i><span>Teachers</span><span class="badge secondary" id="teachersBadge">0</span>
           </button>
-        </div>
-        <div class="nav-section">
-          <div class="nav-title">Operations</div>
           <button class="nav-item" data-module="attendance" onclick="switchModule('attendance', event)">
-            <i class="fas fa-clipboard-check"></i><span>Attendance</span>
-          </button>
-          <button class="nav-item" data-module="timetable" onclick="switchModule('timetable', event)">
-            <i class="fas fa-calendar"></i><span>Timetable</span>
-          </button>
-        </div>
-        <div class="nav-section">
-          <div class="nav-title">Academic</div>
-          <button class="nav-item" data-module="fees" onclick="switchModule('fees', event)">
-            <i class="fas fa-money-bill"></i><span>Fees</span>
+            <i class="fas fa-calendar-check"></i><span>Attendance</span>
           </button>
           <button class="nav-item" data-module="results" onclick="switchModule('results', event)">
-            <i class="fas fa-chart-bar"></i><span>Results</span>
+            <i class="fas fa-file-invoice"></i><span>Examination</span>
           </button>
         </div>
-        <div class="nav-section">
-          <div class="nav-title">Admin</div>
+
+        <div class="nav-group">
+          <span class="nav-label">Finance & Assets</span>
+          <button class="nav-item" data-module="fees" onclick="switchModule('fees', event)">
+            <i class="fas fa-wallet"></i><span>Fee Management</span>
+          </button>
+          <button class="nav-item" data-module="timetable" onclick="switchModule('timetable', event)">
+            <i class="fas fa-clock"></i><span>Class Schedule</span>
+          </button>
+        </div>
+
+        <div class="nav-group">
+          <span class="nav-label">System Admin</span>
           <button class="nav-item" data-module="announcements" onclick="switchModule('announcements', event)">
-            <i class="fas fa-bullhorn"></i><span>Announcements</span>
+            <i class="fas fa-bullhorn"></i><span>Notices</span>
           </button>
           <button class="nav-item" data-module="settings" onclick="switchModule('settings', event)">
-            <i class="fas fa-cog"></i><span>Settings</span>
+            <i class="fas fa-gears"></i><span>Settings</span>
           </button>
           <button class="nav-item" data-module="logs" onclick="switchModule('logs', event)">
-            <i class="fas fa-history"></i><span>Logs</span>
+            <i class="fas fa-shield-halved"></i><span>Audit Logs</span>
           </button>
         </div>
-        <div class="nav-footer">
-          <button class="nav-item" onclick="toggleTheme()"><i class="fas fa-moon"></i><span>Dark Mode</span></button>
-          <button class="nav-item logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
-        </div>
       </nav>
+
+      <div class="sidebar-footer">
+        <button class="footer-action" onclick="toggleTheme()" title="Toggle Theme">
+          <i class="fas fa-circle-half-stroke"></i><span>Display Mode</span>
+        </button>
+        <button class="footer-action logout" onclick="logout()">
+          <i class="fas fa-power-off"></i><span>Logout</span>
+        </button>
+      </div>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main-content">
-      <header class="top-bar">
-        <div class="top-bar-left">
-          <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <header class="top-nav">
+        <div class="top-nav-left">
+          <button class="menu-trigger" onclick="toggleSidebar()"><i class="fas fa-bars-staggered"></i></button>
           <div class="breadcrumb" id="breadcrumb"></div>
         </div>
-        <div class="top-bar-right">
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="globalSearch" placeholder="Search..." onkeyup="globalSearch(event)">
+        
+        <div class="top-nav-right">
+          <div class="global-search">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="text" id="globalSearch" placeholder="Search records (Alt+K)" onkeyup="globalSearch(event)">
           </div>
-          <button class="theme-btn" onclick="toggleTheme()" title="Toggle Theme"><i class="fas fa-circle-half-stroke"></i></button>
-          <div class="user-menu">
-            <button class="user-btn" onclick="toggleUserMenu()"><i class="fas fa-user-circle"></i><span id="currentUser">Admin</span></button>
-            <div class="dropdown-menu" id="userDropdown">
-              <button onclick="switchModule('settings', null)"><i class="fas fa-cog"></i> Settings</button>
-              <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+          
+          <div class="nav-actions">
+            <button class="nav-icon-btn" onclick="showNotifications()"><i class="fas fa-bell"></i><span class="dot"></span></button>
+            <div class="user-profile" onclick="toggleUserMenu()">
+              <div class="profile-img">A</div>
+              <div class="dropdown-menu" id="userDropdown">
+                <div class="dropdown-header">
+                  <strong>System Admin</strong>
+                  <p>admin@yasrab.edu</p>
+                </div>
+                <hr>
+                <button onclick="switchModule('settings', null)"><i class="fas fa-user-gear"></i> My Profile</button>
+                <button onclick="showBackupModal()"><i class="fas fa-database"></i> Backup Data</button>
+                <button class="text-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div class="content-wrapper">
-        <!-- Dashboard -->
-        <div id="module-dashboard" class="module-content">
-          <div class="module-header">
-            <h2>Dashboard</h2>
-            <button class="btn btn-secondary" onclick="refreshDashboard()"><i class="fas fa-refresh"></i> Refresh</button>
-          </div>
-          <div class="dashboard-grid">
-            <div class="stat-card"><div class="stat-icon" style="background: #3498db;"><i class="fas fa-users"></i></div><div class="stat-content"><p>Total Students</p><h3 id="stat-students">0</h3></div></div>
-            <div class="stat-card"><div class="stat-icon" style="background: #2ecc71;"><i class="fas fa-chalkboard-user"></i></div><div class="stat-content"><p>Total Teachers</p><h3 id="stat-teachers">0</h3></div></div>
-            <div class="stat-card"><div class="stat-icon" style="background: #e74c3c;"><i class="fas fa-clock"></i></div><div class="stat-content"><p>Pending Admissions</p><h3 id="stat-admissions">0</h3></div></div>
-            <div class="stat-card"><div class="stat-icon" style="background: #f39c12;"><i class="fas fa-money-bill"></i></div><div class="stat-content"><p>Total Fees</p><h3 id="stat-fees">Rs. 0</h3></div></div>
-          </div>
-          <div class="dashboard-content">
-            <div class="card">
-              <div class="card-header"><h3>Recent Activity</h3></div>
-              <div class="activity-list" id="activityList"></div>
-            </div>
-            <div class="card">
-              <div class="card-header"><h3>Quick Actions</h3></div>
-              <div class="quick-actions">
-                <button class="action-btn" onclick="switchModule('admissions', null)"><i class="fas fa-user-plus"></i><span>New Admission</span></button>
-                <button class="action-btn" onclick="switchModule('attendance', null)"><i class="fas fa-clipboard-check"></i><span>Attendance</span></button>
-                <button class="action-btn" onclick="switchModule('fees', null)"><i class="fas fa-money-bill"></i><span>Record Fee</span></button>
-                <button class="action-btn" onclick="switchModule('announcements', null)"><i class="fas fa-bullhorn"></i><span>Announcement</span></button>
+      <div class="scroll-area">
+        <div class="content-container">
+          
+          <!-- MODULE: DASHBOARD -->
+          <section id="module-dashboard" class="module-content">
+            <div class="view-header">
+              <div class="view-title">
+                <h1>Overview</h1>
+                <p>Welcome back, here's what's happening today.</p>
+              </div>
+              <div class="view-actions">
+                <button class="btn btn-glass" onclick="refreshDashboard()"><i class="fas fa-rotate"></i> Sync</button>
+                <button class="btn btn-primary" onclick="openAdmissionForm()"><i class="fas fa-plus"></i> New Enrollment</button>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Admissions -->
-        <div id="module-admissions" class="module-content" style="display: none;">
-          <div class="module-header">
-            <h2>Admissions</h2>
-            <button class="btn btn-primary" onclick="openAdmissionForm()"><i class="fas fa-plus"></i> New</button>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3>Applications</h3><input type="text" id="admissionsSearch" placeholder="Search..." onkeyup="filterAdmissions()"></div>
-            <div class="table-responsive"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admissionsTable"></tbody></table></div>
-          </div>
-        </div>
+            <div class="stats-grid">
+              <div class="stats-card">
+                <div class="stats-icon blue"><i class="fas fa-user-graduate"></i></div>
+                <div class="stats-data">
+                  <span class="stats-label">Total Students</span>
+                  <h2 id="stat-students">0</h2>
+                  <span class="stats-trend positive"><i class="fas fa-arrow-up"></i> 12%</span>
+                </div>
+              </div>
+              <div class="stats-card">
+                <div class="stats-icon green"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="stats-data">
+                  <span class="stats-label">Faculty Members</span>
+                  <h2 id="stat-teachers">0</h2>
+                  <span class="stats-trend">Active</span>
+                </div>
+              </div>
+              <div class="stats-card">
+                <div class="stats-icon orange"><i class="fas fa-file-signature"></i></div>
+                <div class="stats-data">
+                  <span class="stats-label">Pending Apps</span>
+                  <h2 id="stat-admissions">0</h2>
+                  <span class="stats-trend warning">Action required</span>
+                </div>
+              </div>
+              <div class="stats-card">
+                <div class="stats-icon purple"><i class="fas fa-sack-dollar"></i></div>
+                <div class="stats-data">
+                  <span class="stats-label">Revenue (MTD)</span>
+                  <h2 id="stat-fees">Rs. 0</h2>
+                  <span class="stats-trend positive"><i class="fas fa-arrow-up"></i> 5.4%</span>
+                </div>
+              </div>
+            </div>
 
-        <!-- Students -->
-        <div id="module-students" class="module-content" style="display: none;">
-          <div class="module-header">
-            <h2>Students</h2>
-            <button class="btn btn-primary" onclick="openStudentForm()"><i class="fas fa-plus"></i> Add</button>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3>All Students</h3><input type="text" id="studentsSearch" placeholder="Search..." onkeyup="filterStudents()"></div>
-            <div class="table-responsive"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Phone</th><th>Enrolled</th><th>Status</th><th>Actions</th></tr></thead><tbody id="studentsTable"></tbody></table></div>
-          </div>
-        </div>
+            <div class="dashboard-layout">
+              <div class="card glass-card main-chart">
+                <div class="card-header">
+                  <h3>Recent System Activity</h3>
+                  <button class="btn-icon" onclick="loadLogs()"><i class="fas fa-ellipsis-vertical"></i></button>
+                </div>
+                <div class="activity-feed" id="activityList">
+                  <!-- Activity items injected here -->
+                </div>
+              </div>
+              
+              <div class="card side-panel">
+                <div class="card-header"><h3>Quick Shortcuts</h3></div>
+                <div class="shortcut-grid">
+                  <button onclick="switchModule('attendance', null)"><i class="fas fa-clipboard-user"></i><span>Attendance</span></button>
+                  <button onclick="switchModule('fees', null)"><i class="fas fa-receipt"></i><span>Collect Fee</span></button>
+                  <button onclick="switchModule('results', null)"><i class="fas fa-chart-line"></i><span>Reports</span></button>
+                  <button onclick="showBackupModal()"><i class="fas fa-cloud-arrow-down"></i><span>Export</span></button>
+                </div>
+                <div class="promo-box">
+                  <i class="fas fa-lightbulb"></i>
+                  <p><strong>Pro Tip:</strong> Use Alt+K to quickly search for any student or record.</p>
+                </div>
+              </div>
+            </div>
+          </section>
 
-        <!-- Teachers -->
-        <div id="module-teachers" class="module-content" style="display: none;">
-          <div class="module-header">
-            <h2>Teachers</h2>
-            <button class="btn btn-primary" onclick="openTeacherForm()"><i class="fas fa-plus"></i> Add</button>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3>Faculty</h3><input type="text" id="teachersSearch" placeholder="Search..." onkeyup="filterTeachers()"></div>
-            <div class="table-responsive"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Subject</th><th>Actions</th></tr></thead><tbody id="teachersTable"></tbody></table></div>
-          </div>
-        </div>
+          <!-- MODULE: ADMISSIONS -->
+          <section id="module-admissions" class="module-content" style="display: none;">
+            <div class="view-header">
+              <div class="view-title"><h1>Admissions</h1><p>Manage new enrollment applications</p></div>
+              <button class="btn btn-primary" onclick="openAdmissionForm()"><i class="fas fa-plus"></i> Create Application</button>
+            </div>
+            <div class="card table-card">
+              <div class="table-toolbar">
+                <div class="search-wrapper"><i class="fas fa-filter"></i><input type="text" id="admissionsSearch" placeholder="Filter applications..." onkeyup="filterAdmissions()"></div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead><tr><th>ID</th><th>Applicant Name</th><th>Grade</th><th>Contact</th><th>Applied On</th><th>Status</th><th>Actions</th></tr></thead>
+                  <tbody id="admissionsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
 
-        <!-- Attendance -->
-        <div id="module-attendance" class="module-content" style="display: none;">
-          <div class="module-header">
-            <h2>Attendance</h2>
-            <div><input type="date" id="attendanceDate" value=""><button class="btn btn-secondary" onclick="loadAttendanceForDate()">Load</button></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3>Mark Attendance</h3></div>
-            <div class="table-responsive"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Status</th><th>Action</th></tr></thead><tbody id="attendanceTable"></tbody></table></div>
-            <button class="btn btn-primary" onclick="saveAttendance()" style="margin-top: 20px;"><i class="fas fa-save"></i> Save</button>
-          </div>
-        </div>
+          <!-- MODULE: STUDENTS -->
+          <section id="module-students" class="module-content" style="display: none;">
+            <div class="view-header">
+              <div class="view-title"><h1>Students</h1><p>Comprehensive student directory</p></div>
+              <button class="btn btn-primary" onclick="openStudentForm()"><i class="fas fa-user-plus"></i> Add Student</button>
+            </div>
+            <div class="card table-card">
+              <div class="table-toolbar">
+                <div class="search-wrapper"><i class="fas fa-search"></i><input type="text" id="studentsSearch" placeholder="Search students by name or ID..." onkeyup="filterStudents()"></div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead><tr><th>ID</th><th>Student Name</th><th>Class</th><th>Phone</th><th>Enrollment Date</th><th>Status</th><th>Actions</th></tr></thead>
+                  <tbody id="studentsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
 
-        <!-- Fees -->
-        <div id="module-fees" class="module-content" style="display: none;">
-          <div class="module-header">
-            <h2>Fee Management</h2>
-            <button class="btn btn-primary" onclick="openFeeForm()"><i class="fas fa-plus"></i> Record</button>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3>Fee Records</h3><input type="text" id="feesSearch" placeholder="Search..." onkeyup="filterFees()"></div>
-            <div class="table-responsive"><table class="data-table"><thead><tr><th>Student ID</th><th>Amount</th><th>Month</th><th>Method</th><th>Receipt</th><th>Date</th></tr></thead><tbody id="feesTable"></tbody></table></div>
-          </div>
-        </div>
+          <!-- MODULE: TEACHERS -->
+          <section id="module-teachers" class="module-content" style="display: none;">
+            <div class="view-header">
+              <div class="view-title"><h1>Faculty</h1><p>Manage teachers and staff records</p></div>
+              <button class="btn btn-primary" onclick="openTeacherForm()"><i class="fas fa-plus"></i> Register Teacher</button>
+            </div>
+            <div class="card table-card">
+              <div class="table-toolbar">
+                <div class="search-wrapper"><i class="fas fa-search"></i><input type="text" id="teachersSearch" placeholder="Search faculty..." onkeyup="filterTeachers()"></div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead><tr><th>Staff ID</th><th>Name</th><th>Department / Subject</th><th>Actions</th></tr></thead>
+                  <tbody id="teachersTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
 
-        <!-- Results -->
-        <div id="module-results" class="module-content" style="display: none;">
-          <div class="module-header">
-            <h2>Results</h2>
-            <button class="btn btn-primary" onclick="openResultForm()"><i class="fas fa-plus"></i> Add</button>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3>Results</h3><input type="text" id="resultsSearch" placeholder="Search..." onkeyup="filterResults()"></div>
-            <div class="table-responsive"><table class="data-table"><thead><tr><th>Student ID</th><th>Subject</th><th>Marks</th><th>Total</th><th>Grade</th><th>Date</th></tr></thead><tbody id="resultsTable"></tbody></table></div>
-          </div>
-        </div>
+          <!-- MODULE: ATTENDANCE -->
+          <section id="module-attendance" class="module-content" style="display: none;">
+            <div class="view-header">
+              <div class="view-title"><h1>Attendance</h1><p>Daily presence tracking</p></div>
+              <div class="date-selector">
+                <i class="fas fa-calendar-day"></i>
+                <input type="date" id="attendanceDate">
+                <button class="btn btn-glass" onclick="loadAttendanceForDate()">Load List</button>
+              </div>
+            </div>
+            <div class="card table-card">
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead><tr><th>ID</th><th>Student Name</th><th>Status</th><th>Last Marked</th></tr></thead>
+                  <tbody id="attendanceTable"></tbody>
+                </table>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-primary btn-lg" onclick="saveAttendance()"><i class="fas fa-floppy-disk"></i> Save Attendance Records</button>
+              </div>
+            </div>
+          </section>
 
-        <!-- Timetable -->
-        <div id="module-timetable" class="module-content" style="display: none;">
-          <div class="module-header">
-            <h2>Timetable</h2>
-            <button class="btn btn-primary" onclick="openTimetableForm()"><i class="fas fa-plus"></i> Add</button>
-          </div>
-          <div class="card"><div class="card-header"><h3>Schedule</h3></div><div id="timetableContent"></div></div>
-        </div>
+          <!-- MODULE: FEES -->
+          <section id="module-fees" class="module-content" style="display: none;">
+            <div class="view-header">
+              <div class="view-title"><h1>Finance</h1><p>Fee collection and records</p></div>
+              <button class="btn btn-primary" onclick="openFeeForm()"><i class="fas fa-hand-holding-dollar"></i> Collect Fee</button>
+            </div>
+            <div class="card table-card">
+              <div class="table-toolbar">
+                <div class="search-wrapper"><i class="fas fa-magnifying-glass"></i><input type="text" id="feesSearch" placeholder="Search records..." onkeyup="filterFees()"></div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead><tr><th>Student ID</th><th>Amount</th><th>Month</th><th>Payment Method</th><th>Receipt No</th><th>Transaction Date</th></tr></thead>
+                  <tbody id="feesTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
 
-        <!-- Announcements -->
-        <div id="module-announcements" class="module-content" style="display: none;">
-          <div class="module-header">
-            <h2>Announcements</h2>
-            <button class="btn btn-primary" onclick="openAnnouncementForm()"><i class="fas fa-plus"></i> New</button>
-          </div>
-          <div class="card"><div class="card-header"><h3>Latest</h3></div><div id="announcementsList" class="announcements-list"></div></div>
-        </div>
+          <!-- MODULE: RESULTS -->
+          <section id="module-results" class="module-content" style="display: none;">
+            <div class="view-header">
+              <div class="view-title"><h1>Academic Results</h1><p>Publish and manage student performance</p></div>
+              <button class="btn btn-primary" onclick="openResultForm()"><i class="fas fa-award"></i> Post Result</button>
+            </div>
+            <div class="card table-card">
+              <div class="table-toolbar">
+                <div class="search-wrapper"><i class="fas fa-magnifying-glass"></i><input type="text" id="resultsSearch" placeholder="Search results..." onkeyup="filterResults()"></div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead><tr><th>Student ID</th><th>Subject</th><th>Score</th><th>%</th><th>Grade</th><th>Published</th></tr></thead>
+                  <tbody id="resultsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
 
-        <!-- Settings -->
-        <div id="module-settings" class="module-content" style="display: none;">
-          <div class="module-header"><h2>Settings</h2></div>
-          <div class="card"><div class="card-header"><h3>Configuration</h3></div>
-            <form id="configForm" class="form-grid">
-              <div class="form-group"><label for="schoolName">School Name</label><input type="text" id="schoolName" placeholder="Name"></div>
-              <div class="form-group"><label for="schoolAddress">Address</label><input type="text" id="schoolAddress" placeholder="Address"></div>
-              <div class="form-group"><label for="schoolContact">Contact</label><input type="text" id="schoolContact" placeholder="Contact"></div>
-              <div class="form-group"><label for="schoolEmail">Email</label><input type="email" id="schoolEmail" placeholder="Email"></div>
-              <button type="button" class="btn btn-primary" onclick="saveConfig()" style="grid-column: 1/-1;"><i class="fas fa-save"></i> Save</button>
-            </form>
-          </div>
-        </div>
+          <!-- MODULE: TIMETABLE -->
+          <section id="module-timetable" class="module-content" style="display: none;">
+            <div class="view-header">
+              <div class="view-title"><h1>Timetable</h1><p>Weekly class schedules</p></div>
+              <button class="btn btn-primary" onclick="openTimetableForm()"><i class="fas fa-calendar-plus"></i> Add Schedule</button>
+            </div>
+            <div id="timetableContent"></div>
+          </section>
 
-        <!-- Logs -->
-        <div id="module-logs" class="module-content" style="display: none;">
-          <div class="module-header"><h2>Audit Logs</h2></div>
-          <div class="card">
-            <div class="card-header"><h3>Activity</h3><input type="text" id="logsSearch" placeholder="Search..." onkeyup="filterLogs()"></div>
-            <div class="table-responsive"><table class="data-table"><thead><tr><th>Time</th><th>Action</th><th>Type</th></tr></thead><tbody id="logsTable"></tbody></table></div>
-          </div>
+          <!-- MODULE: ANNOUNCEMENTS -->
+          <section id="module-announcements" class="module-content" style="display: none;">
+            <div class="view-header">
+              <div class="view-title"><h1>Notices</h1><p>System-wide announcements</p></div>
+              <button class="btn btn-primary" onclick="openAnnouncementForm()"><i class="fas fa-message"></i> New Announcement</button>
+            </div>
+            <div id="announcementsList" class="notices-grid"></div>
+          </section>
+
+          <!-- MODULE: SETTINGS -->
+          <section id="module-settings" class="module-content" style="display: none;">
+            <div class="view-header"><h1>Portal Settings</h1></div>
+            <div class="card settings-card">
+              <div class="card-header"><h3>Organization Profile</h3></div>
+              <form id="configForm" class="settings-form">
+                <div class="form-grid">
+                  <div class="form-group"><label>School Name</label><input type="text" id="schoolName"></div>
+                  <div class="form-group"><label>Official Email</label><input type="email" id="schoolEmail"></div>
+                  <div class="form-group"><label>Contact Number</label><input type="text" id="schoolContact"></div>
+                  <div class="form-group" style="grid-column: 1/-1;"><label>Campus Address</label><input type="text" id="schoolAddress"></div>
+                </div>
+                <div class="form-footer">
+                  <button type="button" class="btn btn-primary" onclick="saveConfig()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- MODULE: LOGS -->
+          <section id="module-logs" class="module-content" style="display: none;">
+            <div class="view-header"><h1>Security Audit Logs</h1><p>Recent administrative actions</p></div>
+            <div class="card table-card">
+              <div class="table-toolbar">
+                <div class="search-wrapper"><i class="fas fa-filter"></i><input type="text" id="logsSearch" placeholder="Filter logs..." onkeyup="filterLogs()"></div>
+              </div>
+              <div class="table-responsive">
+                <table class="modern-table">
+                  <thead><tr><th>Timestamp</th><th>Action Details</th><th>Category</th></tr></thead>
+                  <tbody id="logsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
         </div>
       </div>
     </main>
   </div>
 
-  <!-- Modal -->
-  <div id="formModal" class="modal">
-    <div class="modal-content">
+  <!-- SHARED COMPONENTS: MODALS -->
+  <div id="formModal" class="modal-overlay">
+    <div class="modal-card">
       <div class="modal-header">
-        <h3 id="modalTitle">Form</h3>
-        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        <h3 id="modalTitle">Form Title</h3>
+        <button class="btn-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
       </div>
       <div id="modalBody" class="modal-body"></div>
     </div>
   </div>
 
-  <script src="app.js"></script>
-</body>
-</html>
-
-  <!-- Advanced Filter Modal -->
-  <div id="filterModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Advanced Filters</h3>
-        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
-      </div>
-      <div id="filterModalBody" class="modal-body"></div>
-    </div>
-  </div>
-
-  <!-- Confirmation Dialog -->
-  <div id="confirmDialog" class="modal">
-    <div class="modal-content" style="max-width: 400px;">
-      <div class="modal-header">
-        <h3>Confirm Action</h3>
-        <button class="close-btn" onclick="closeConfirm()"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="modal-body">
-        <p id="confirmMessage" style="margin-bottom: 20px;"></p>
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
-          <button class="btn btn-primary" id="confirmBtn" onclick="executeConfirm()">Confirm</button>
+  <div id="confirmDialog" class="modal-overlay">
+    <div class="modal-card mini">
+      <div class="modal-body text-center">
+        <div class="confirm-icon"><i class="fas fa-circle-question"></i></div>
+        <h3 id="confirmTitle">Are you sure?</h3>
+        <p id="confirmMessage"></p>
+        <div class="modal-actions">
+          <button class="btn btn-glass" onclick="closeConfirm()">Cancel</button>
+          <button class="btn btn-primary" id="confirmBtn" onclick="executeConfirm()">Proceed</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Backup/Export Modal -->
-  <div id="backupModal" class="modal">
-    <div class="modal-content">
+  <div id="backupModal" class="modal-overlay">
+    <div class="modal-card">
       <div class="modal-header">
-        <h3>Data Backup & Export</h3>
-        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        <h3>System Backup & Export</h3>
+        <button class="btn-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <div class="backup-options" style="display: grid; gap: 15px;">
-          <button class="backup-btn" onclick="exportFullBackup()">
-            <i class="fas fa-download"></i>
-            <span>
-              <strong>Full Database Backup</strong>
-              <p>Download complete database JSON</p>
-            </span>
+        <div class="backup-grid">
+          <button class="backup-item" onclick="exportFullBackup()">
+            <i class="fas fa-file-export"></i>
+            <div class="backup-info"><strong>JSON Database</strong><p>Full system dump for developers</p></div>
           </button>
-          <button class="backup-btn" onclick="exportStudentsCSV()">
+          <button class="backup-item disabled">
             <i class="fas fa-file-csv"></i>
-            <span>
-              <strong>Export Students (CSV)</strong>
-              <p>Download student list in CSV format</p>
-            </span>
-          </button>
-          <button class="backup-btn" onclick="exportFeesCSV()">
-            <i class="fas fa-money-bill"></i>
-            <span>
-              <strong>Export Fees Report</strong>
-              <p>Download fee collection data</p>
-            </span>
-          </button>
-          <button class="backup-btn" onclick="generateReport()">
-            <i class="fas fa-chart-bar"></i>
-            <span>
-              <strong>Generate System Report</strong>
-              <p>Create comprehensive system report</p>
-            </span>
+            <div class="backup-info"><strong>Students (CSV)</strong><p>Export directory to Excel</p></div>
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- System Statistics Modal -->
-  <div id="statsModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>System Statistics & Analytics</h3>
-        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="modal-body">
-        <div id="statsContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Help & Documentation Modal -->
-  <div id="helpModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Help & Documentation</h3>
-        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="modal-body">
-        <div id="helpContent">
-          <h4>Quick Start Guide</h4>
-          <ul>
-            <li><strong>Dashboard:</strong> View system overview and statistics</li>
-            <li><strong>Students:</strong> Manage student records and information</li>
-            <li><strong>Teachers:</strong> Manage faculty information</li>
-            <li><strong>Admissions:</strong> Process new student applications</li>
-            <li><strong>Attendance:</strong> Mark daily student attendance</li>
-            <li><strong>Fees:</strong> Record and track fee payments</li>
-            <li><strong>Results:</strong> Enter and manage student grades</li>
-            <li><strong>Timetable:</strong> Create class schedules</li>
-            <li><strong>Announcements:</strong> Post system-wide messages</li>
-            <li><strong>Settings:</strong> Configure school information</li>
-          </ul>
-          <h4>Keyboard Shortcuts</h4>
-          <ul>
-            <li><code>Alt + D</code> - Dashboard</li>
-            <li><code>Alt + S</code> - Students</li>
-            <li><code>Alt + T</code> - Teachers</li>
-            <li><code>Alt + H</code> - Help</li>
-            <li><code>Ctrl + K</code> - Search</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Notification Center -->
-  <div id="notificationCenter" class="notification-center" style="display: none;">
-    <div class="notification-header">
-      <h3>Notifications</h3>
-      <button onclick="clearNotifications()" class="btn btn-small">Clear All</button>
-    </div>
-    <div id="notificationsList" class="notifications-list"></div>
-  </div>
-
-  <script>
-    // Close modal functions
-    function closeConfirm() {
-      document.getElementById("confirmDialog").style.display = "none";
-    }
-
-    function executeConfirm() {
-      if (window.confirmCallback) {
-        window.confirmCallback();
-      }
-      closeConfirm();
-    }
-
-    function showConfirm(message, callback) {
-      document.getElementById("confirmMessage").textContent = message;
-      window.confirmCallback = callback;
-      document.getElementById("confirmDialog").style.display = "flex";
-    }
-
-    // Export functions
-    function exportFullBackup() {
-      showToast("Preparing backup...", "info");
-      setTimeout(() => {
-        const link = document.createElement('a');
-        link.href = `${API_BASE}/export`;
-        link.click();
-        showToast("Backup downloaded successfully ✓", "success");
-        closeModal();
-      }, 500);
-    }
-
-    function exportStudentsCSV() {
-      showToast("Generating CSV...", "info");
-      // CSV generation logic would go here
-      showToast("Students CSV exported ✓", "success");
-      closeModal();
-    }
-
-    function exportFeesCSV() {
-      showToast("Generating fees report...", "info");
-      // Fees report logic would go here
-      showToast("Fees report exported ✓", "success");
-      closeModal();
-    }
-
-    function generateReport() {
-      showToast("Generating system report...", "info");
-      // Report generation logic would go here
-      showToast("Report generated successfully ✓", "success");
-      closeModal();
-    }
-
-    function clearNotifications() {
-      document.getElementById("notificationsList").innerHTML = "";
-      showToast("Notifications cleared", "info");
-    }
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
