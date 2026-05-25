@@ -63,6 +63,15 @@
       "address": "mailir cant",
       "status": "active",
       "enrolledDate": "2026-05-25T06:36:30.338Z"
+    },
+    {
+      "id": "S-329690",
+      "name": "hassam",
+      "class": "5th Grade",
+      "phone": "",
+      "address": "",
+      "status": "active",
+      "enrolledDate": "2026-05-25T09:12:09.690Z"
     }
   ],
   "teachers": [
@@ -146,17 +155,37 @@
       {
         "id": "S003",
         "status": "present",
-        "time": "2026-05-25T05:23:54.235Z"
+        "time": "2026-05-25T06:39:35.932Z"
       },
       {
         "id": "S-663568",
         "status": "present",
-        "time": "2026-05-25T05:23:54.235Z"
+        "time": "2026-05-25T06:39:35.932Z"
+      },
+      {
+        "id": "S004",
+        "status": "present",
+        "time": "2026-05-25T06:39:35.932Z"
+      },
+      {
+        "id": "S-889969",
+        "status": "present",
+        "time": "2026-05-25T06:39:35.932Z"
       },
       {
         "id": "TEST-S-AKMO",
         "status": "present",
-        "time": "2026-05-25T06:18:10.015Z"
+        "time": "2026-05-25T06:39:35.932Z"
+      },
+      {
+        "id": "S-950210",
+        "status": "present",
+        "time": "2026-05-25T06:39:35.932Z"
+      },
+      {
+        "id": "1779690944725",
+        "status": "present",
+        "time": "2026-05-25T06:39:35.932Z"
       }
     ]
   },
@@ -235,7 +264,8 @@
         "date": "2026-05-25T06:18:10.035Z",
         "receipt": "RCP-1779689890035"
       }
-    ]
+    ],
+    "STRESS-F0HRTA": []
   },
   "results": {
     "S001": [
@@ -262,6 +292,14 @@
         "percentage": 50,
         "grade": "F",
         "date": "2026-05-22T11:14:41.489Z"
+      },
+      {
+        "subject": "English Language",
+        "marks": 80,
+        "total": 100,
+        "percentage": 80,
+        "grade": "A",
+        "date": "2026-05-25T09:14:20.444Z"
       }
     ],
     "S003": [
@@ -320,40 +358,145 @@
         "time": "Tuesday 2:00 PM"
       },
       {
-        "subject": "biology",
-        "day": "Monday",
-        "time": "09:46"
-      },
-      {
         "subject": "math",
         "day": "Tuesday",
         "time": "06:17"
       },
       {
-        "subject": "biology",
-        "day": "Tuesday",
-        "time": "04:17"
-      },
-      {
         "subject": "Mathametics",
         "day": "Monday",
         "time": "10:00"
-      },
-      {
-        "subject": "biology",
-        "day": "Monday",
-        "time": "11:34"
       }
     ],
-    "10A21": [
-      {
-        "subject": "biology",
-        "day": "Monday",
-        "time": "09:32"
-      }
-    ]
+    "10A21": []
   },
   "logs": [
+    {
+      "id": 1779700460458,
+      "action": "📊 Bulk results posted for S004 (1 subjects)",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:14:20.458Z"
+    },
+    {
+      "id": 1779700434203,
+      "action": "🗑️ Timetable entry removed for 10A",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:54.203Z"
+    },
+    {
+      "id": 1779700431024,
+      "action": "🗑️ Timetable entry removed for 10A",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:51.024Z"
+    },
+    {
+      "id": 1779700429108,
+      "action": "🗑️ Timetable entry removed for 10A",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:49.108Z"
+    },
+    {
+      "id": 1779700427044,
+      "action": "🗑️ Timetable entry removed for 10A",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:47.044Z"
+    },
+    {
+      "id": 1779700423528,
+      "action": "🗑️ Timetable entry removed for 10A",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:43.528Z"
+    },
+    {
+      "id": 1779700421230,
+      "action": "🗑️ Timetable entry removed for 10A",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:41.230Z"
+    },
+    {
+      "id": 1779700418479,
+      "action": "🗑️ Timetable entry removed for 10A",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:38.479Z"
+    },
+    {
+      "id": 1779700415957,
+      "action": "🗑️ Timetable entry removed for 10A",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:35.957Z"
+    },
+    {
+      "id": 1779700407889,
+      "action": "🗑️ Timetable entry removed for 10A21",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:13:27.889Z"
+    },
+    {
+      "id": 1779700329690,
+      "action": "✅ Admission approved: hassam",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T09:12:09.690Z"
+    },
+    {
+      "id": 1779700316115,
+      "action": "📝 Admission application: hassam",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-25T09:11:56.115Z"
+    },
+    {
+      "id": 1779691533978,
+      "action": "🗑️ Student record deleted: (ID: STRESS-F0HRTA)",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-25T06:45:33.978Z"
+    },
+    {
+      "id": 1779691533963,
+      "action": "🗑️ Fee record voided: (Student: STRESS-F0HRTA, Receipt: RCP-1779691533926)",
+      "type": "FINANCE",
+      "userId": "admin",
+      "time": "2026-05-25T06:45:33.963Z"
+    },
+    {
+      "id": 1779691533931,
+      "action": "💰 Fee payment: PKR 1000 from STRESS-F0HRTA for January",
+      "type": "FINANCE",
+      "userId": "admin",
+      "time": "2026-05-25T06:45:33.931Z"
+    },
+    {
+      "id": 1779691533903,
+      "action": "📚 Student enrolled: Stress Test Student (STRESS-F0HRTA)",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:45:33.903Z"
+    },
+    {
+      "id": 1779691533886,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T06:45:33.886Z"
+    },
+    {
+      "id": 1779691175937,
+      "action": "📋 Bulk attendance: 7 records on 2026-05-25",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:39:35.937Z"
+    },
     {
       "id": 1779690990348,
       "action": "📚 Student enrolled: Ahsan (1779690944725)",
@@ -986,6 +1129,15 @@
   "announcements": [],
   "admissions": [
     {
+      "id": "ADM-1779700316093",
+      "name": "hassam",
+      "class": "5th Grade",
+      "phone": "",
+      "address": "",
+      "status": "approved",
+      "date": "2026-05-25T09:11:56.093Z"
+    },
+    {
       "id": "ADM-1779690944725",
       "name": "Ahsan",
       "class": "10th Grade",
@@ -1050,5 +1202,5 @@
     }
   ],
   "_lastGeneratedCount": 5,
-  "_deletedStudentName": "Applicant One"
+  "_deletedStudentName": "Stress Test Student"
 }
