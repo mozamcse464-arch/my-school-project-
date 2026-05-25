@@ -738,6 +738,211 @@ a {
   font-size: 1rem;
 }
 
+.btn-secondary {
+  background: var(--bg-main);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card);
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+}
+
+.btn-icon:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.card-footer {
+  padding: 20px 25px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-main);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bg-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.btn-close:hover {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.module-content {
+  width: 100%;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.main-chart {
+  min-height: 420px;
+}
+
+.side-panel {
+  min-height: 420px;
+}
+
+.sidebar-close {
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+}
+
+.disabled,
+button.disabled,
+.btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.settings-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 25px;
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-form {
+  width: 100%;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.backup-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.backup-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.backup-item:hover {
+  background: var(--bg-card);
+}
+
+.backup-info {
+  display: grid;
+  gap: 6px;
+}
+
+.custom-select-wrapper {
+  display: inline-block;
+  width: 100%;
+}
+
+.att-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+.att-select.present {
+  border-color: var(--success);
+}
+
+.att-select.absent {
+  border-color: var(--danger);
+}
+
+.att-select.leave {
+  border-color: var(--warning);
+}
+
+.state-success {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.state-error {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.state-warning {
+  color: var(--warning);
+  font-weight: 700;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.date-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.show-on-mobile {
+  display: none;
+}
+
 /* ===== COMPONENTS: CARDS ===== */
 .card {
   background: var(--bg-card);
@@ -852,6 +1057,10 @@ a {
   background: var(--bg-main);
   border: 1px solid transparent;
   transition: all 0.2s;
+}
+
+.activity-details {
+  flex: 1;
 }
 
 .activity-item:hover {
@@ -1293,4 +1502,885 @@ a {
 
 .btn:active, .nav-item:active {
   transform: scale(0.97);
+}
+
+/* ===== ENHANCED UI COMPONENTS (Added) ===== */
+#liveResultPreview {
+  border: 1px solid var(--border);
+  background: var(--bg-main);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+#liveResultPreview:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--primary);
+  opacity: 0.5;
+}
+
+#liveResultPreview strong {
+  font-size: 1rem;
+  font-weight: 800;
+  transition: color 0.3s ease;
+}
+
+#markAllBtn {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1.5px solid var(--primary);
+  color: var(--primary);
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+}
+
+#markAllBtn:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px var(--primary-glow);
+}
+
+/* Polished input states for Datalists */
+input[list]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+/* Dark mode specific for new components */
+body.dark-mode #liveResultPreview {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.1);
+}
+
+body.dark-mode #markAllBtn {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--primary);
+  color: #60a5fa;
+}
+
+body.dark-mode #markAllBtn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* ===== COMPREHENSIVE UI REFINEMENTS (Additive) ===== */
+
+/* 1. Global Table Polish */
+.modern-table {
+  border-spacing: 0;
+  border-collapse: separate;
+}
+
+.modern-table th {
+  background: var(--bg-main);
+  border-bottom: 2px solid var(--border);
+  padding: 15px 25px;
+  color: var(--text-main);
+  opacity: 0.8;
+  font-size: 0.7rem;
+}
+
+.modern-table tr:last-child td {
+  border-bottom: none;
+}
+
+.modern-table td {
+  transition: background 0.2s ease;
+}
+
+.modern-table tr:hover td {
+  background: rgba(59, 130, 246, 0.04) !important;
+}
+
+/* 2. Enhanced Stats Cards (Dashboard) */
+.stats-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-main) 100%);
+}
+
+.stats-card:before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, var(--primary-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.stats-card:hover:before {
+  opacity: 0.1;
+}
+
+/* 3. Refined Activity Feed */
+.activity-item {
+  border-left: 2px solid var(--border);
+  margin-left: 20px;
+  padding-left: 25px;
+  position: relative;
+  background: transparent;
+  border-radius: 0;
+}
+
+.activity-item:hover {
+  background: rgba(59, 130, 246, 0.02);
+  border-left-color: var(--primary);
+}
+
+.activity-icon {
+  position: absolute;
+  left: -21px;
+  top: 15px;
+  width: 40px;
+  height: 40px;
+  z-index: 2;
+  border: 4px solid var(--bg-card);
+}
+
+/* 4. Attendance Pill Selects */
+.att-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.att-select.present { background-color: rgba(16, 185, 129, 0.1); color: var(--success); }
+.att-select.absent { background-color: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.att-select.leave { background-color: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+.att-select:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* 5. Scroll Area Polish */
+.scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.05);
+  border: 4px solid transparent;
+  background-clip: padding-box;
+}
+
+.scroll-area:hover::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+}
+
+/* ===== CLEAN-PRO ACADEMIC OVERRIDES (Minimalist) ===== */
+.result-row:hover {
+  transform: none !important; /* Remove shaking/scaling */
+  background: rgba(248, 250, 252, 0.8) !important;
+  box-shadow: none !important;
+}
+
+/* CLEAN TEXT GRADES - REMOVE ALL BADGE ELEMENTS */
+.grade-badge-ultra {
+  min-width: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  font-size: 1.1rem !important;
+  font-weight: 800 !important;
+  display: inline !important;
+}
+
+/* Color-only overrides for grades */
+.grade-A-plus, .grade-A { color: #10b981 !important; background: transparent !important; border: none !important; }
+.grade-B, .state-warning { color: #f59e0b !important; background: transparent !important; border: none !important; }
+.grade-F { color: #ef4444 !important; background: transparent !important; border: none !important; }
+
+/* Scrollable & Professional Report Card */
+.report-card-scroll-wrapper {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+}
+
+.report-card-container {
+  padding: 40px;
+  background: white;
+  color: #1e293b;
+  min-height: 800px; /* Force document feel */
+}
+
+.report-header h2 {
+  font-family: 'Serif', serif;
+  font-size: 2rem;
+  letter-spacing: 4px;
+}
+
+.report-card-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.no-print-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+@media print {
+  .report-card-scroll-wrapper { max-height: none !important; overflow: visible !important; border: none !important; padding: 0 !important; }
+  .no-print, .no-print-btn, .report-card-actions { display: none !important; }
+  .modal-card { width: 100% !important; margin: 0 !important; }
+}
+
+.progress-container-pro {
+  background: var(--border) !important;
+  height: 4px !important; /* Even thinner and cleaner */
+  width: 100px !important;
+}
+
+.progress-fill-pro {
+  box-shadow: none !important;
+}
+
+/* Consistency with other modules */
+.modern-table td[data-label="Performance"], 
+.modern-table td[data-label="Grade"] {
+  vertical-align: middle;
+}
+
+/* Ensure branding remains untouched and clean */
+.logo-crest-container {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 10px;
+}
+
+/* 6. Form Group Polish */
+.form-group label {
+  color: var(--text-main);
+  opacity: 0.7;
+  letter-spacing: 0.02em;
+}
+
+.form-group input:focus, .form-group select:focus {
+  border-color: var(--primary);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+/* 7. View Header Polish */
+.view-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+
+/* ===== ULTRA PRODUCTION UX (Additive) ===== */
+
+/* 1. Glassmorphism Overrides */
+.sidebar {
+  background: rgba(15, 23, 42, 0.95) !important;
+  backdrop-filter: blur(20px);
+}
+
+.top-nav {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(20px);
+}
+
+.dark-mode .top-nav {
+  background: rgba(2, 6, 23, 0.8) !important;
+}
+
+/* 2. Micro-Animations */
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.module-content {
+  animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn:active { transform: scale(0.95) !important; }
+
+/* 3. Dashboard Speed Dial */
+.speed-dial {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 999;
+}
+
+.speed-dial-main {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 1.5rem;
+  box-shadow: 0 10px 25px var(--primary-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.speed-dial-main:hover {
+  transform: rotate(45deg) scale(1.1);
+}
+
+.speed-dial-options {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  display: none;
+  flex-direction: column;
+  gap: 15px;
+  animation: modalUp 0.3s ease;
+}
+
+.speed-dial.active .speed-dial-options {
+  display: flex;
+}
+
+.dial-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.dial-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.dial-label {
+  position: absolute;
+  right: 65px;
+  background: var(--bg-sidebar);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.dial-btn:hover .dial-label {
+  opacity: 1;
+}
+
+/* 4. Skeleton UI */
+.skeleton-row td {
+  padding: 20px !important;
+}
+
+.skeleton-box {
+  height: 20px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 5. Clean Modal Polish */
+.modal-card {
+  border: none;
+  overflow: hidden;
+  max-height: 90vh; /* Prevent modal from exceeding screen height */
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-body { 
+  padding: 30px; 
+  overflow-y: auto; /* Enable scrolling for every popup */
+  flex: 1;
+}
+
+.modal-header {
+  background: var(--bg-main);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ===== ULTRA LOGO & BRANDING (Crest-Pro Version) ===== */
+.logo-crest-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 5px;
+}
+
+.crest-shield {
+  position: relative;
+  width: 45px;
+  height: 50px;
+  background: #ffffff;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 50% 100%, 0% 80%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--primary);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.crest-letter {
+  color: var(--bg-sidebar);
+  font-weight: 900;
+  font-size: 1.8rem;
+  font-family: 'Serif', serif;
+  z-index: 2;
+}
+
+.crest-text-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.brand-tag {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 2px;
+  opacity: 0.9;
+}
+
+/* ===== EXAMINATION: CLEAN PRO PALETTE ===== */
+.result-row {
+  border-left: 4px solid transparent;
+}
+
+.result-row:hover {
+  border-left-color: var(--primary);
+  background: rgba(37, 99, 235, 0.02) !important;
+}
+
+.grade-badge-ultra {
+  min-width: 45px;
+  height: 45px;
+  border-radius: 50% !important;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  border: 2px solid transparent !important;
+}
+
+.grade-A-plus { 
+  background: rgba(16, 185, 129, 0.1) !important; 
+  color: #059669 !important; 
+  border-color: #10b981 !important; 
+}
+
+.grade-A { 
+  background: rgba(16, 185, 129, 0.05) !important; 
+  color: #10b981 !important; 
+}
+
+.grade-B { 
+  background: rgba(245, 158, 11, 0.1) !important; 
+  color: #d97706 !important; 
+  border-color: #f59e0b !important; 
+}
+
+.grade-F { 
+  background: rgba(239, 68, 68, 0.1) !important; 
+  color: #dc2626 !important; 
+  border-color: #ef4444 !important; 
+}
+
+/* Progress Bar Refinement */
+.progress-container-pro {
+  width: 120px;
+  background: #f1f5f9;
+  height: 6px;
+  border-radius: 100px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill-pro {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Status Indicator UX */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  padding: 5px 12px;
+  background: var(--bg-main);
+  border-radius: 100px;
+  border: 1px solid var(--border);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--success);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--success);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== EXAMINATION: REPORT CARD STYLES ===== */
+.result-row {
+  transition: all 0.3s ease;
+}
+
+.result-row:hover {
+  transform: scale(1.01);
+  z-index: 10;
+}
+
+.grade-badge-ultra {
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.grade-A-plus { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.grade-F { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+/* ===== GLOBAL PRINT & UX FEATURES ===== */
+@media print {
+  .sidebar, .top-nav, .view-actions, .btn-small, .table-toolbar { display: none !important; }
+  .main-content { padding: 0 !important; }
+  .scroll-area { overflow: visible !important; }
+  .card { border: none !important; box-shadow: none !important; }
+  body { background: white !important; color: black !important; }
+}
+
+.btn-print {
+  background: var(--bg-sidebar);
+  color: white;
+}
+
+.btn-print:hover {
+  background: #1e293b;
+  transform: translateY(-2px);
+}
+
+/* Skeleton Loading Animation */
+@keyframes skeleton-loading {
+  0% { background-color: var(--border); }
+  100% { background-color: var(--bg-main); }
+}
+
+.skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
+  border-radius: 4px;
+}
+
+/* FINAL CLEAN TEXT OVERRIDE - NO CIRCLES, NO BADGES */
+/* ===== ULTRA SAAS UI ENHANCEMENTS (Additive) ===== */
+
+/* 1. Custom Interactive Tooltips */
+[title] {
+  position: relative;
+}
+
+[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: var(--bg-sidebar);
+  color: white;
+  padding: 6px 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  animation: tooltipFade 0.2s ease;
+}
+
+@keyframes tooltipFade {
+  from { opacity: 0; transform: translateX(-50%) translateY(0); }
+  to { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+}
+
+/* 2. Command Center (Shortcuts Overlay) */
+.keyboard-guide {
+  position: fixed;
+  bottom: 25px;
+  left: 300px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 8px 15px;
+  border-radius: 100px;
+  display: flex;
+  gap: 20px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  box-shadow: var(--shadow-sm);
+  z-index: 90;
+  transition: all 0.3s ease;
+}
+
+.keyboard-guide:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.kbd-item kbd {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 800;
+  color: var(--primary);
+  margin-right: 5px;
+}
+
+/* 3. High-End Input Focus Effects */
+.form-group input:focus {
+  border-width: 2px;
+  transform: translateY(-1px);
+}
+
+/* 4. Table Row Selection Pulse */
+.modern-table tr.selected {
+  background: var(--primary-glow) !important;
+  border-left: 4px solid var(--primary);
+}
+
+/* Hide tooltips on mobile */
+@media (max-width: 768px) {
+  .keyboard-guide { display: none; }
+  [title]:hover::after { display: none; }
+}
+
+/* CRITICAL UI FIX: REMOVE GRADE CIRCLES FOR PRODUCTION */
+.grade-badge-ultra {
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: inline !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: normal !important;
+  justify-content: flex-start !important;
+  align-items: baseline !important;
+  clip-path: none !important;
+  -webkit-clip-path: none !important;
+}
+
+.grade-badge-ultra::before, .grade-badge-ultra::after {
+  display: none !important;
+}
+
+/* Ensure clean text colors */
+.grade-A-plus, .grade-A { color: var(--success) !important; font-weight: 800 !important; }
+.grade-B, .state-warning { color: var(--warning) !important; font-weight: 800 !important; }
+.grade-F, .state-error { color: var(--danger) !important; font-weight: 800 !important; }
+
+/* Form Error Styling */
+.form-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: block;
+  animation: slideIn 0.2s ease;
+}
+
+input:invalid,
+input[style*="border-color: var(--danger)"],
+select:invalid {
+  border-color: var(--danger) !important;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+/* Enhanced Skeleton Loaders */
+.skeleton-box {
+  background: linear-gradient(90deg, var(--border) 25%, rgba(0,0,0,0.05) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  height: 16px;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-row {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Better Loading States */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  z-index: 10;
+}
+
+/* Student Profile Card */
+.student-profile-container {
+  animation: slideIn 0.3s ease;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.stat-box {
+  background: var(--bg-main);
+  padding: 15px;
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--primary);
+  transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Improved Bulk Import UI */
+#bulkStudentData {
+  font-family: 'Monaco', 'Courier New', monospace;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  resize: vertical;
+}
+
+#bulkStudentData:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* Toast Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Disable animations on low-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Improved Responsive Design */
+@media (max-width: 480px) {
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-card {
+    font-size: 0.9rem;
+  }
+
+  .stats-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
 }

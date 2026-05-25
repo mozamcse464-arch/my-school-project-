@@ -73,9 +73,15 @@
     <!-- SIDEBAR -->
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-brand">
-        <div class="logo">
-          <div class="logo-icon"><i class="fas fa-bolt-lightning"></i></div>
-          <span class="logo-text">Yasrab<em>ERP</em></span>
+        <div class="logo-crest-container">
+          <div class="crest-shield">
+            <span class="crest-letter">Y</span>
+            <div class="crest-torch"></div>
+          </div>
+          <div class="crest-text-box">
+            <h1 class="brand-name">YASRAB</h1>
+            <p class="brand-tag">ACADEMIC EXCELLENCE</p>
+          </div>
         </div>
         <button class="sidebar-close show-on-mobile" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
       </div>
@@ -158,6 +164,11 @@
         </div>
         
         <div class="top-nav-right">
+          <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span>System Online</span>
+          </div>
+          
           <div class="global-search">
             <i class="fas fa-magnifying-glass"></i>
             <input type="text" id="globalSearch" placeholder="Search records (Alt+K)" onkeyup="globalSearch(event)">
@@ -263,8 +274,10 @@
           <!-- MODULE: ADMISSIONS -->
           <section id="module-admissions" class="module-content" style="display: none;">
             <div class="view-header">
-              <div class="view-title"><h1>Admissions</h1><p>Manage new enrollment applications</p></div>
-              <button class="btn btn-primary" onclick="openAdmissionForm()"><i class="fas fa-plus"></i> Create Application</button>
+              <div class="view-title"><h1>Admissions</h1><p>Pending applications for new students</p></div>
+              <div class="view-actions">
+                <button class="btn btn-primary" onclick="openAdmissionForm()"><i class="fas fa-plus"></i> New Application</button>
+              </div>
             </div>
             <div class="card table-card">
               <div class="table-toolbar">
@@ -363,7 +376,9 @@
           <section id="module-results" class="module-content" style="display: none;">
             <div class="view-header">
               <div class="view-title"><h1>Academic Results</h1><p>Publish and manage student performance</p></div>
-              <button class="btn btn-primary" onclick="openResultForm()"><i class="fas fa-award"></i> Post Result</button>
+              <div class="view-actions">
+                <button class="btn btn-primary" onclick="openResultForm()"><i class="fas fa-award"></i> Post Result</button>
+              </div>
             </div>
             <div class="card table-card">
               <div class="table-toolbar">
@@ -482,6 +497,73 @@
     </div>
   </div>
 
+  <!-- SHARED DATALISTS FOR AUTO-SUGGESTION -->
+  <datalist id="classList">
+    <option value="Playgroup">
+    <option value="Nursery">
+    <option value="KG-I">
+    <option value="KG-II">
+    <option value="1st Grade">
+    <option value="2nd Grade">
+    <option value="3rd Grade">
+    <option value="4th Grade">
+    <option value="5th Grade">
+    <option value="6th Grade">
+    <option value="7th Grade">
+    <option value="8th Grade">
+    <option value="9th Grade">
+    <option value="10th Grade">
+    <option value="O-Levels">
+    <option value="A-Levels">
+  </datalist>
+
+  <datalist id="subjectList">
+    <option value="Mathematics">
+    <option value="English Literature">
+    <option value="English Language">
+    <option value="Science">
+    <option value="Physics">
+    <option value="Chemistry">
+    <option value="Biology">
+    <option value="Urdu">
+    <option value="Islamiat">
+    <option value="Pakistan Studies">
+    <option value="Computer Science">
+    <option value="Arts">
+  </datalist>
+
+  <!-- ULTRA DASHBOARD SPEED DIAL -->
+  <div class="speed-dial" id="speedDial">
+    <button class="speed-dial-main" onclick="toggleSpeedDial()">
+      <i class="fas fa-plus"></i>
+    </button>
+    <div class="speed-dial-options">
+      <button class="dial-btn" onclick="openStudentForm()">
+        <i class="fas fa-user-graduate"></i>
+        <span class="dial-label">Add Student</span>
+      </button>
+      <button class="dial-btn" onclick="openTeacherForm()">
+        <i class="fas fa-chalkboard-user"></i>
+        <span class="dial-label">Add Teacher</span>
+      </button>
+      <button class="dial-btn" onclick="switchModule('attendance')">
+        <i class="fas fa-calendar-check"></i>
+        <span class="dial-label">Attendance</span>
+      </button>
+      <button class="dial-btn" onclick="openAdmissionForm()">
+        <i class="fas fa-user-plus"></i>
+        <span class="dial-label">New Admission</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="keyboard-guide">
+    <div class="kbd-item"><kbd>Alt</kbd>+<kbd>K</kbd> Global Search</div>
+    <div class="kbd-item"><kbd>Alt</kbd>+<kbd>D</kbd> Dashboard</div>
+    <div class="kbd-item"><kbd>Esc</kbd> Close Modal</div>
+  </div>
+
+  <script src="validators.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,20 +1,6 @@
 {
   "students": [
     {
-      "id": "S002",
-      "name": "Sara Khan",
-      "class": "9B",
-      "enrolledDate": "2026-05-21T06:33:12.137Z"
-    },
-    {
-      "id": "S-552252",
-      "name": "Mozam Ali",
-      "class": "12",
-      "phone": "+923433591864",
-      "address": "mailir cant",
-      "enrolledDate": "2026-05-22T10:59:12.252Z"
-    },
-    {
       "id": "S003",
       "name": "abdul basit",
       "class": "10",
@@ -22,6 +8,61 @@
       "address": "mailir cant",
       "status": "active",
       "enrolledDate": "2026-05-22T11:09:54.221Z"
+    },
+    {
+      "id": "S-663568",
+      "name": "Hassan",
+      "class": "6",
+      "phone": "23123232323",
+      "address": "lahori muhala",
+      "status": "active",
+      "enrolledDate": "2026-05-23T04:31:03.568Z"
+    },
+    {
+      "id": "S004",
+      "name": "Mozam Ali",
+      "class": "4th Grade",
+      "phone": "03433591864",
+      "address": "mailir cant",
+      "status": "active",
+      "enrolledDate": "2026-05-25T05:54:10.530Z"
+    },
+    {
+      "id": "S-889969",
+      "name": "Applicant AKMO",
+      "class": "Grade 9",
+      "phone": "03456789012",
+      "address": "",
+      "status": "active",
+      "enrolledDate": "2026-05-25T06:18:09.969Z"
+    },
+    {
+      "id": "TEST-S-AKMO",
+      "name": "Test Student AKMO",
+      "class": "Grade 11",
+      "phone": "03001234567",
+      "address": "Test Street 123",
+      "status": "active",
+      "enrolledDate": "2026-05-25T06:18:09.974Z",
+      "updatedAt": "2026-05-25T06:18:10.060Z"
+    },
+    {
+      "id": "S-950210",
+      "name": "Ahsan",
+      "class": "10th Grade",
+      "phone": "+923433591864",
+      "address": "mailir cant",
+      "status": "active",
+      "enrolledDate": "2026-05-25T06:35:50.210Z"
+    },
+    {
+      "id": "1779690944725",
+      "name": "Ahsan",
+      "class": "10th Grade",
+      "phone": "03433591864",
+      "address": "mailir cant",
+      "status": "active",
+      "enrolledDate": "2026-05-25T06:36:30.338Z"
     }
   ],
   "teachers": [
@@ -32,6 +73,16 @@
     {
       "name": "Ms. Ayesha",
       "subject": "English"
+    },
+    {
+      "id": "T-1779601757417",
+      "name": "Mozam ALi",
+      "subject": "Chemistry"
+    },
+    {
+      "id": "T-1779689889991",
+      "name": "Master Tester AKMO",
+      "subject": "Computer Science"
     }
   ],
   "attendance": {
@@ -45,6 +96,67 @@
         "id": "S003",
         "status": "present",
         "time": "2026-05-22T10:49:46.804Z"
+      }
+    ],
+    "2026-05-23": [
+      {
+        "id": "S003",
+        "status": "present",
+        "time": "2026-05-23T04:31:25.624Z"
+      },
+      {
+        "id": "S-999",
+        "status": "present",
+        "time": "2026-05-23T04:31:25.634Z"
+      },
+      {
+        "id": "S-560279",
+        "status": "present",
+        "time": "2026-05-23T04:31:25.643Z"
+      },
+      {
+        "id": "S-663568",
+        "status": "present",
+        "time": "2026-05-23T04:31:25.652Z"
+      }
+    ],
+    "2026-05-24": [
+      {
+        "id": "S003",
+        "status": "present",
+        "time": "2026-05-24T05:48:27.438Z"
+      },
+      {
+        "id": "S-999",
+        "status": "present",
+        "time": "2026-05-24T05:48:27.438Z"
+      },
+      {
+        "id": "S-560279",
+        "status": "present",
+        "time": "2026-05-24T05:48:27.438Z"
+      },
+      {
+        "id": "S-663568",
+        "status": "present",
+        "time": "2026-05-24T05:48:27.438Z"
+      }
+    ],
+    "2026-05-25": [
+      {
+        "id": "S003",
+        "status": "present",
+        "time": "2026-05-25T05:23:54.235Z"
+      },
+      {
+        "id": "S-663568",
+        "status": "present",
+        "time": "2026-05-25T05:23:54.235Z"
+      },
+      {
+        "id": "TEST-S-AKMO",
+        "status": "present",
+        "time": "2026-05-25T06:18:10.015Z"
       }
     ]
   },
@@ -63,6 +175,13 @@
         "month": "Migrated",
         "method": "cash",
         "date": "2026-05-21T06:33:12.137Z"
+      },
+      {
+        "amount": 3433,
+        "month": "January",
+        "method": "cash",
+        "date": "2026-05-23T04:09:38.512Z",
+        "receipt": "RCP-1779509378512"
       }
     ],
     "S003": [
@@ -72,6 +191,49 @@
         "method": "bank",
         "date": "2026-05-22T11:19:17.619Z",
         "receipt": "RCP-1779448757619"
+      },
+      {
+        "amount": 5000,
+        "month": "January",
+        "method": "pending",
+        "date": "2026-05-25T06:18:10.026Z",
+        "receipt": "GEN-1779689890026-S003"
+      }
+    ],
+    "S-663568": [
+      {
+        "amount": 5000,
+        "month": "January",
+        "method": "pending",
+        "date": "2026-05-25T06:18:10.026Z",
+        "receipt": "GEN-1779689890026-S-663568"
+      }
+    ],
+    "S004": [
+      {
+        "amount": 5000,
+        "month": "January",
+        "method": "pending",
+        "date": "2026-05-25T06:18:10.026Z",
+        "receipt": "GEN-1779689890026-S004"
+      }
+    ],
+    "S-889969": [
+      {
+        "amount": 5000,
+        "month": "January",
+        "method": "pending",
+        "date": "2026-05-25T06:18:10.026Z",
+        "receipt": "GEN-1779689890026-S-889969"
+      }
+    ],
+    "TEST-S-AKMO": [
+      {
+        "amount": 5000,
+        "month": "January",
+        "method": "cash",
+        "date": "2026-05-25T06:18:10.035Z",
+        "receipt": "RCP-1779689890035"
       }
     ]
   },
@@ -100,6 +262,50 @@
         "percentage": 50,
         "grade": "F",
         "date": "2026-05-22T11:14:41.489Z"
+      }
+    ],
+    "S003": [
+      {
+        "subject": "Science",
+        "marks": 100,
+        "total": 100,
+        "percentage": 100,
+        "grade": "A+",
+        "date": "2026-05-24T05:10:30.749Z"
+      },
+      {
+        "subject": "English Language",
+        "marks": 23,
+        "total": 100,
+        "percentage": 23,
+        "grade": "F",
+        "date": "2026-05-24T05:26:53.377Z"
+      },
+      {
+        "subject": "Arts",
+        "marks": 34,
+        "total": 100,
+        "percentage": 34,
+        "grade": "F",
+        "date": "2026-05-24T05:26:53.377Z"
+      }
+    ],
+    "TEST-S-AKMO": [
+      {
+        "subject": "Math",
+        "marks": 85,
+        "total": 100,
+        "percentage": 85,
+        "grade": "A",
+        "date": "2026-05-25T06:18:10.049Z"
+      },
+      {
+        "subject": "English",
+        "marks": 78,
+        "total": 100,
+        "percentage": 78,
+        "grade": "B",
+        "date": "2026-05-25T06:18:10.049Z"
       }
     ]
   },
@@ -132,10 +338,519 @@
         "subject": "Mathametics",
         "day": "Monday",
         "time": "10:00"
+      },
+      {
+        "subject": "biology",
+        "day": "Monday",
+        "time": "11:34"
+      }
+    ],
+    "10A21": [
+      {
+        "subject": "biology",
+        "day": "Monday",
+        "time": "09:32"
       }
     ]
   },
   "logs": [
+    {
+      "id": 1779690990348,
+      "action": "📚 Student enrolled: Ahsan (1779690944725)",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:36:30.348Z"
+    },
+    {
+      "id": 1779690950210,
+      "action": "✅ Admission approved: Ahsan",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:35:50.210Z"
+    },
+    {
+      "id": 1779690944743,
+      "action": "📝 Admission application: Ahsan",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-25T06:35:44.743Z"
+    },
+    {
+      "id": 1779690825053,
+      "action": "🗑️ Student record deleted: (ID: S-489703)",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-25T06:33:45.053Z"
+    },
+    {
+      "id": 1779690816175,
+      "action": "🗑️ Student record deleted: (ID: S-487314)",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-25T06:33:36.175Z"
+    },
+    {
+      "id": 1779690728034,
+      "action": "🗑️ Student record deleted: (ID: S-552252)",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-25T06:32:08.034Z"
+    },
+    {
+      "id": 1779690489703,
+      "action": "✅ Admission approved: Applicant One",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:28:09.703Z"
+    },
+    {
+      "id": 1779690487315,
+      "action": "✅ Admission approved: Mozam Alia",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:28:07.315Z"
+    },
+    {
+      "id": 1779690481653,
+      "action": "📝 Admission application: Mozam Alia",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-25T06:28:01.653Z"
+    },
+    {
+      "id": 1779689890087,
+      "action": "❌ Failed login attempt: admin",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:10.087Z"
+    },
+    {
+      "id": 1779689890062,
+      "action": "📈 Promoted students from Grade 10 to Grade 11",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:10.062Z"
+    },
+    {
+      "id": 1779689890052,
+      "action": "📊 Bulk results posted for TEST-S-AKMO (2 subjects)",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:10.052Z"
+    },
+    {
+      "id": 1779689890041,
+      "action": "💰 Fee payment: PKR 5000 from TEST-S-AKMO for January",
+      "type": "FINANCE",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:10.041Z"
+    },
+    {
+      "id": 1779689890028,
+      "action": "💰 Generated pending fees for January (5 students)",
+      "type": "FINANCE",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:10.028Z"
+    },
+    {
+      "id": 1779689890018,
+      "action": "📋 Bulk attendance: 1 records on 2026-05-25",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:10.018Z"
+    },
+    {
+      "id": 1779689890003,
+      "action": "👨‍🏫 Faculty registered: Master Tester AKMO",
+      "type": "STAFF",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:10.003Z"
+    },
+    {
+      "id": 1779689889977,
+      "action": "📚 Student enrolled: Test Student AKMO (TEST-S-AKMO)",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:09.977Z"
+    },
+    {
+      "id": 1779689889969,
+      "action": "✅ Admission approved: Applicant AKMO",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:09.969Z"
+    },
+    {
+      "id": 1779689889962,
+      "action": "📝 Admission application: Applicant AKMO",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-25T06:18:09.962Z"
+    },
+    {
+      "id": 1779689889953,
+      "action": "🔧 School configuration updated",
+      "type": "SYSTEM",
+      "userId": "system",
+      "time": "2026-05-25T06:18:09.953Z"
+    },
+    {
+      "id": 1779689889937,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T06:18:09.937Z"
+    },
+    {
+      "id": 1779689863551,
+      "action": "🔧 School configuration updated",
+      "type": "SYSTEM",
+      "userId": "system",
+      "time": "2026-05-25T06:17:43.551Z"
+    },
+    {
+      "id": 1779689863534,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T06:17:43.534Z"
+    },
+    {
+      "id": 1779689837276,
+      "action": "🔧 School configuration updated",
+      "type": "SYSTEM",
+      "userId": "system",
+      "time": "2026-05-25T06:17:17.276Z"
+    },
+    {
+      "id": 1779689837250,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T06:17:17.250Z"
+    },
+    {
+      "id": 1779689429430,
+      "action": "📝 Admission application: Applicant One",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-25T06:10:29.430Z"
+    },
+    {
+      "id": 1779689429420,
+      "action": "🔧 School configuration updated",
+      "type": "SYSTEM",
+      "userId": "system",
+      "time": "2026-05-25T06:10:29.420Z"
+    },
+    {
+      "id": 1779689429393,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T06:10:29.393Z"
+    },
+    {
+      "id": 1779688604221,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T05:56:44.221Z"
+    },
+    {
+      "id": 1779688576785,
+      "action": "👋 Admin logout: undefined",
+      "type": "AUTH",
+      "userId": "system",
+      "time": "2026-05-25T05:56:16.785Z"
+    },
+    {
+      "id": 1779688450540,
+      "action": "📚 Student enrolled: Mozam Ali (S004)",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T05:54:10.540Z"
+    },
+    {
+      "id": 1779686634238,
+      "action": "📋 Bulk attendance: 3 records on 2026-05-25",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-25T05:23:54.238Z"
+    },
+    {
+      "id": 1779683044174,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T04:24:04.174Z"
+    },
+    {
+      "id": 1779601915149,
+      "action": "🗑️ Student record deleted: S-999",
+      "type": "SECURITY",
+      "userId": "system",
+      "time": "2026-05-24T05:51:55.149Z"
+    },
+    {
+      "id": 1779601911534,
+      "action": "🗑️ Student record deleted: S-560279",
+      "type": "SECURITY",
+      "userId": "system",
+      "time": "2026-05-24T05:51:51.534Z"
+    },
+    {
+      "id": 1779601757422,
+      "action": "👨‍🏫 Faculty registered: Mozam ALi",
+      "type": "STAFF",
+      "userId": "system",
+      "time": "2026-05-24T05:49:17.422Z"
+    },
+    {
+      "id": 1779601707443,
+      "action": "📋 Bulk attendance: 5 records on 2026-05-24",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-24T05:48:27.443Z"
+    },
+    {
+      "id": 1779600413387,
+      "action": "📊 Bulk results posted for S003 (2 subjects)",
+      "type": "ACADEMIC",
+      "userId": "system",
+      "time": "2026-05-24T05:26:53.387Z"
+    },
+    {
+      "id": 1779599430757,
+      "action": "📊 Result posted: S003 - Science (100/100)",
+      "type": "ACADEMIC",
+      "userId": "system",
+      "time": "2026-05-24T05:10:30.757Z"
+    },
+    {
+      "id": 1779598091021,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-24T04:48:11.021Z"
+    },
+    {
+      "id": 1779510685654,
+      "action": "📋 Attendance marked: S-663568 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:31:25.654Z"
+    },
+    {
+      "id": 1779510685644,
+      "action": "📋 Attendance marked: S-560279 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:31:25.644Z"
+    },
+    {
+      "id": 1779510685636,
+      "action": "📋 Attendance marked: S-999 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:31:25.636Z"
+    },
+    {
+      "id": 1779510685627,
+      "action": "📋 Attendance marked: S003 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:31:25.627Z"
+    },
+    {
+      "id": 1779510685614,
+      "action": "📋 Attendance marked: S-552252 - absent on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:31:25.614Z"
+    },
+    {
+      "id": 1779510654845,
+      "action": "📝 Admission application: Hassan",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:30:54.845Z"
+    },
+    {
+      "id": 1779510604392,
+      "action": "📋 Attendance marked: S-560279 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:30:04.392Z"
+    },
+    {
+      "id": 1779510604383,
+      "action": "📋 Attendance marked: S-999 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:30:04.383Z"
+    },
+    {
+      "id": 1779510604360,
+      "action": "📋 Attendance marked: S003 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:30:04.360Z"
+    },
+    {
+      "id": 1779510604339,
+      "action": "📋 Attendance marked: S-552252 - absent on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:30:04.339Z"
+    },
+    {
+      "id": 1779510599407,
+      "action": "📋 Attendance marked: S-560279 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:29:59.407Z"
+    },
+    {
+      "id": 1779510599390,
+      "action": "📋 Attendance marked: S-999 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:29:59.390Z"
+    },
+    {
+      "id": 1779510599367,
+      "action": "📋 Attendance marked: S003 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:29:59.367Z"
+    },
+    {
+      "id": 1779510599343,
+      "action": "📋 Attendance marked: S-552252 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:29:59.343Z"
+    },
+    {
+      "id": 1779510597865,
+      "action": "📋 Attendance marked: S-560279 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:29:57.865Z"
+    },
+    {
+      "id": 1779510597857,
+      "action": "📋 Attendance marked: S-999 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:29:57.857Z"
+    },
+    {
+      "id": 1779510597845,
+      "action": "📋 Attendance marked: S003 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:29:57.845Z"
+    },
+    {
+      "id": 1779510597837,
+      "action": "📋 Attendance marked: S-552252 - present on 2026-05-23",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T04:29:57.837Z"
+    },
+    {
+      "id": 1779510552151,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-23T04:29:12.151Z"
+    },
+    {
+      "id": 1779510549561,
+      "action": "❌ Failed login attempt: admin",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-23T04:29:09.561Z"
+    },
+    {
+      "id": 1779510207103,
+      "action": "🗑️ Student record deleted: S002",
+      "type": "SECURITY",
+      "userId": "system",
+      "time": "2026-05-23T04:23:27.103Z"
+    },
+    {
+      "id": 1779510198421,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-23T04:23:18.421Z"
+    },
+    {
+      "id": 1779510193618,
+      "action": "❌ Failed login attempt: admin",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-23T04:23:13.618Z"
+    },
+    {
+      "id": 1779509378517,
+      "action": "💰 Fee payment: PKR 3433 from S002 for January",
+      "type": "FINANCE",
+      "userId": "system",
+      "time": "2026-05-23T04:09:38.517Z"
+    },
+    {
+      "id": 1779508815659,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-23T04:00:15.659Z"
+    },
+    {
+      "id": 1779508800018,
+      "action": "❌ Failed login attempt: admin",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-23T04:00:00.018Z"
+    },
+    {
+      "id": 1779508792438,
+      "action": "❌ Failed login attempt: admin",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-23T03:59:52.438Z"
+    },
+    {
+      "id": 1779507552382,
+      "action": "📝 Admission application: hassam",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T03:39:12.382Z"
+    },
+    {
+      "id": 1779507361603,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-23T03:36:01.603Z"
+    },
+    {
+      "id": 1779507350102,
+      "action": "📚 Student enrolled: Sara Khan",
+      "type": "REGISTRY",
+      "userId": "system",
+      "time": "2026-05-23T03:35:50.102Z"
+    },
+    {
+      "id": 1779507350081,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-23T03:35:50.081Z"
+    },
     {
       "id": 1779448757622,
       "action": "💰 Fee payment: PKR 1500 from S003",
@@ -263,13 +978,67 @@
     }
   ],
   "config": {
-    "schoolName": "Yasrab School Management System",
-    "address": "Main Campus, Karachi",
-    "contact": "+92 123 4567890",
-    "email": "admin@yasrab.edu"
+    "schoolName": "Test Academy",
+    "address": "Education Zone",
+    "contact": "021-33333333",
+    "email": "info@testacademy.edu"
   },
   "announcements": [],
   "admissions": [
+    {
+      "id": "ADM-1779690944725",
+      "name": "Ahsan",
+      "class": "10th Grade",
+      "phone": "+923433591864",
+      "address": "mailir cant",
+      "status": "approved",
+      "date": "2026-05-25T06:35:44.725Z"
+    },
+    {
+      "id": "ADM-1779690481638",
+      "name": "Mozam Alia",
+      "class": "4th Grade",
+      "phone": "+923433591864",
+      "address": "mailir cant",
+      "status": "approved",
+      "date": "2026-05-25T06:28:01.638Z"
+    },
+    {
+      "id": "ADM-1779689889959",
+      "name": "Applicant AKMO",
+      "class": "Grade 9",
+      "phone": "03456789012",
+      "address": "",
+      "status": "approved",
+      "date": "2026-05-25T06:18:09.959Z"
+    },
+    {
+      "id": "ADM-1779689429427",
+      "name": "Applicant One",
+      "class": "Grade 9",
+      "phone": "03456789012",
+      "address": "",
+      "status": "approved",
+      "date": "2026-05-25T06:10:29.427Z"
+    },
+    {
+      "id": "ADM-1779510654840",
+      "name": "Hassan",
+      "class": "6",
+      "phone": "23123232323",
+      "address": "lahori muhala",
+      "status": "approved",
+      "date": "2026-05-23T04:30:54.840Z"
+    },
+    {
+      "id": "ADM-1779507552370",
+      "name": "hassam",
+      "class": "12",
+      "phone": "",
+      "address": "",
+      "status": "approved",
+      "date": "2026-05-23T03:39:12.370Z"
+    },
     {
       "id": "ADM-1779447534273",
       "name": "Mozam Ali",
@@ -279,5 +1048,7 @@
       "status": "approved",
       "date": "2026-05-22T10:58:54.273Z"
     }
-  ]
+  ],
+  "_lastGeneratedCount": 5,
+  "_deletedStudentName": "Applicant One"
 }
