@@ -72,6 +72,16 @@
       "address": "",
       "status": "active",
       "enrolledDate": "2026-05-25T09:12:09.690Z"
+    },
+    {
+      "id": "TEST-1779701058079",
+      "name": "Testy McTest Updated",
+      "class": "10th Grade",
+      "phone": "03001234567",
+      "address": "",
+      "status": "active",
+      "enrolledDate": "2026-05-25T09:24:18.085Z",
+      "updatedAt": "2026-05-25T09:24:18.097Z"
     }
   ],
   "teachers": [
@@ -186,6 +196,11 @@
         "id": "1779690944725",
         "status": "present",
         "time": "2026-05-25T06:39:35.932Z"
+      },
+      {
+        "id": "TEST-1779701058079",
+        "status": "present",
+        "time": "2026-05-25T09:24:18.121Z"
       }
     ]
   },
@@ -265,7 +280,16 @@
         "receipt": "RCP-1779689890035"
       }
     ],
-    "STRESS-F0HRTA": []
+    "STRESS-F0HRTA": [],
+    "TEST-1779701058079": [
+      {
+        "amount": 5000,
+        "month": "January",
+        "method": "cash",
+        "date": "2026-05-25T09:24:18.135Z",
+        "receipt": "RCP-1779701058135"
+      }
+    ]
   },
   "results": {
     "S001": [
@@ -345,6 +369,16 @@
         "grade": "B",
         "date": "2026-05-25T06:18:10.049Z"
       }
+    ],
+    "TEST-1779701058079": [
+      {
+        "subject": "Unit Testing",
+        "marks": 95,
+        "total": 100,
+        "percentage": 95,
+        "grade": "A+",
+        "date": "2026-05-25T09:24:18.150Z"
+      }
     ]
   },
   "timetable": {
@@ -371,6 +405,69 @@
     "10A21": []
   },
   "logs": [
+    {
+      "id": 1779701076928,
+      "action": "❌ Failed login attempt: admin",
+      "type": "SECURITY",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:36.928Z"
+    },
+    {
+      "id": 1779701058176,
+      "action": "🗑️ Teacher removed: (ID: T-1779701058106)",
+      "type": "STAFF",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:18.176Z"
+    },
+    {
+      "id": 1779701058153,
+      "action": "📊 Bulk results posted for TEST-1779701058079 (1 subjects)",
+      "type": "ACADEMIC",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:18.153Z"
+    },
+    {
+      "id": 1779701058142,
+      "action": "💰 Fee payment: PKR 5000 from TEST-1779701058079 for January",
+      "type": "FINANCE",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:18.142Z"
+    },
+    {
+      "id": 1779701058123,
+      "action": "📋 Bulk attendance: 1 records on 2026-05-25",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:18.123Z"
+    },
+    {
+      "id": 1779701058112,
+      "action": "👨‍🏫 Faculty registered: Professor Test",
+      "type": "STAFF",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:18.112Z"
+    },
+    {
+      "id": 1779701058099,
+      "action": "✏️ Student updated: Testy McTest Updated (TEST-1779701058079)",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:18.099Z"
+    },
+    {
+      "id": 1779701058088,
+      "action": "📚 Student enrolled: Testy McTest (TEST-1779701058079)",
+      "type": "REGISTRY",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:18.088Z"
+    },
+    {
+      "id": 1779701058047,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T09:24:18.047Z"
+    },
     {
       "id": 1779700460458,
       "action": "📊 Bulk results posted for S004 (1 subjects)",
