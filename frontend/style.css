@@ -177,6 +177,26 @@ a {
   padding: 20px;
 }
 
+#loginPage .speed-dial {
+  display: none !important;
+}
+
+#mainApp ~ .speed-dial {
+  display: none;
+}
+
+#mainApp .speed-dial {
+  display: block;
+}
+
+body #speedDial {
+  display: none;
+}
+
+body #mainApp ~ #speedDial {
+  display: none;
+}
+
 .auth-glass-card {
   display: flex;
   width: 100%;
@@ -259,19 +279,32 @@ a {
 
 .input-wrapper i {
   position: absolute;
-  left: 15px;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--text-muted);
+  font-size: 1.1rem;
+  pointer-events: none;
 }
 
 .input-wrapper input {
   width: 100%;
-  padding: 14px 15px 14px 45px;
+  padding: 14px 50px 14px 45px;
   background: var(--bg-main);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   color: var(--text-main);
   font-size: 1rem;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.input-wrapper input::placeholder {
+  text-align: center;
+  color: var(--text-muted);
 }
 
 .input-wrapper input:focus {
@@ -283,8 +316,29 @@ a {
 
 .toggle-password {
   position: absolute;
-  right: 15px;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
   color: var(--text-muted);
+  cursor: pointer;
+  padding: 8px 10px;
+  font-size: 1.1rem;
+  pointer-events: auto;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+  justify-content: center;
+  z-index: 3;
+}
+
+.toggle-password:hover {
+  color: var(--primary);
 }
 
 .btn-login {

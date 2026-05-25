@@ -217,10 +217,12 @@ function showLogin() {
       loader.style.display = "none";
       document.getElementById("loginPage").style.display = "flex";
       document.getElementById("mainApp").style.display = "none";
+      document.getElementById("speedDial").style.display = "none";
     }, 300);
   } else {
     document.getElementById("loginPage").style.display = "flex";
     document.getElementById("mainApp").style.display = "none";
+    document.getElementById("speedDial").style.display = "none";
   }
 }
 
@@ -232,10 +234,12 @@ function showApp() {
       loader.style.display = "none";
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("mainApp").style.display = "flex";
+      document.getElementById("speedDial").style.display = "block";
     }, 300);
   } else {
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("mainApp").style.display = "flex";
+    document.getElementById("speedDial").style.display = "block";
   }
 }
 

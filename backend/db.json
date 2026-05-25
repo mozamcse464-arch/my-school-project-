@@ -406,6 +406,13 @@
   },
   "logs": [
     {
+      "id": 1779702712606,
+      "action": "✅ Admin login successful: admin",
+      "type": "AUTH",
+      "userId": "admin",
+      "time": "2026-05-25T09:51:52.606Z"
+    },
+    {
       "id": 1779701076928,
       "action": "❌ Failed login attempt: admin",
       "type": "SECURITY",
